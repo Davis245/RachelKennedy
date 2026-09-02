@@ -9,20 +9,50 @@ const heroRotations = ["left", "right", "none"] as const;
 
 export function SiteHero() {
   const { heroPills, heroPhotos, featuredJourney, recentJourneys } = homePageFixture;
+  const firstHeroPhoto = heroPhotos[0];
+  const secondHeroPhoto = heroPhotos[1];
 
   return (
     <main className="overflow-x-clip py-10 sm:py-14">
       <ContentContainer className="space-y-14 sm:space-y-16">
-        <section className="relative overflow-x-clip lg:min-h-[34rem]" aria-labelledby="homepage-main-heading">
-          <div className="relative z-10 max-w-3xl space-y-6 lg:pt-8">
+        <section
+          className="relative flex min-h-[calc(100svh-8rem)] items-center overflow-x-clip pb-16"
+          aria-labelledby="homepage-main-heading"
+        >
+          <div className="relative z-10 w-full space-y-6">
             <div className="flex flex-wrap gap-3">
               <AccentPill tone="mustard">{heroPills[0]}</AccentPill>
               <AccentPill tone="coral">{heroPills[1]}</AccentPill>
             </div>
 
-            <h1 id="homepage-main-heading" className="text-[clamp(3.5rem,14vw,10rem)] leading-[0.82] uppercase">
-              <span className="block text-[var(--color-ink)]">Rachel</span>
-              <span className="block text-[var(--color-accent-coral)]">Kennedy</span>
+            <h1
+              id="homepage-main-heading"
+              className="text-[clamp(2.25rem,7.2vw,7.6rem)] leading-[0.88] uppercase lg:tracking-[0.01em]"
+            >
+              <span className="flex flex-wrap items-end gap-3 sm:gap-4 lg:flex-nowrap">
+                <span className="text-[var(--color-ink)]">Rachel</span>
+                <ImageFrame rotation="left" className="w-18 shrink-0 bg-[var(--color-bg)] p-1 sm:w-22 lg:w-[9vw]">
+                  <Image
+                    src={firstHeroPhoto.src}
+                    alt={firstHeroPhoto.alt}
+                    width={firstHeroPhoto.width}
+                    height={firstHeroPhoto.height}
+                    sizes="(max-width: 639px) 20vw, (max-width: 1023px) 14vw, 9vw"
+                    className="h-auto w-full"
+                  />
+                </ImageFrame>
+                <span className="text-[var(--color-accent-coral)]">Kennedy</span>
+                <ImageFrame rotation="right" className="w-18 shrink-0 bg-[var(--color-bg)] p-1 sm:w-22 lg:w-[9vw]">
+                  <Image
+                    src={secondHeroPhoto.src}
+                    alt={secondHeroPhoto.alt}
+                    width={secondHeroPhoto.width}
+                    height={secondHeroPhoto.height}
+                    sizes="(max-width: 639px) 20vw, (max-width: 1023px) 14vw, 9vw"
+                    className="h-auto w-full"
+                  />
+                </ImageFrame>
+              </span>
             </h1>
 
             <p className="max-w-xl text-base text-[var(--color-muted)] sm:text-lg">
@@ -31,26 +61,16 @@ export function SiteHero() {
             </p>
           </div>
 
-          <div className="pointer-events-none mt-7 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:absolute lg:top-10 lg:right-0 lg:mt-0 lg:w-[52%]">
-            {heroPhotos.map((photo, index) => (
-              <ImageFrame
-                key={photo.src}
-                rotation={heroRotations[index]}
-                className={`bg-[var(--color-bg)] p-1 ${
-                  index === 0 ? "lg:-translate-x-[4.5rem] lg:translate-y-16" : ""
-                } ${index === 1 ? "lg:-translate-y-6" : ""}`}
-              >
-                <Image
-                  src={photo.src}
-                  alt={photo.alt}
-                  width={photo.width}
-                  height={photo.height}
-                  sizes="(max-width: 639px) 42vw, (max-width: 1023px) 28vw, 22vw"
-                  className="h-auto w-full"
-                />
-              </ImageFrame>
-            ))}
-          </div>
+          <Link
+            href="#featured-journey-heading"
+            aria-label="Scroll to featured journey"
+            className="absolute bottom-0 left-1/2 inline-flex -translate-x-1/2 flex-col items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)] motion-safe:animate-bounce"
+          >
+            <span>Scroll</span>
+            <span aria-hidden="true" className="text-lg leading-none">
+              ↓
+            </span>
+          </Link>
         </section>
 
         <section aria-labelledby="featured-journey-heading" className="space-y-5">
