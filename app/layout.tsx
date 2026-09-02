@@ -13,8 +13,14 @@ const bodySans = localFont({
 });
 
 const displayCondensed = localFont({
-  src: "./fonts/BebasNeue-Regular.ttf",
+  src: "./fonts/DejaVuSansCondensed-Bold.ttf",
   variable: "--font-display-condensed",
+  display: "swap",
+});
+
+const heroDisplay = localFont({
+  src: "./fonts/Bungee-Regular.ttf",
+  variable: "--font-hero-display",
   display: "swap",
 });
 
@@ -26,7 +32,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${bodySans.variable} ${displayCondensed.variable} antialiased`}>
+      <body className={`${bodySans.variable} ${displayCondensed.variable} ${heroDisplay.variable} antialiased`}>
         <div className="flex min-h-screen flex-col">
           <SiteHeader />
           <div className="flex-1">{children}</div>

@@ -14,6 +14,7 @@
 
   --font-body: var(--font-body-sans), "Inter", "Avenir Next", "Segoe UI", sans-serif;
   --font-display: var(--font-display-condensed), "Arial Narrow", "Inter", sans-serif;
+  --font-hero: var(--font-hero-display), var(--font-display);
 
   --font-size-body: 1rem;
   --line-height-body: 1.7;
