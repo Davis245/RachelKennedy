@@ -1,6 +1,18 @@
-# Rachel Kennedy Blog
+# Rachel Kennedy Travel Blog
 
-A custom blog website for Rachel Kennedy.
+A custom travel blog for Rachel Kennedy, built around photography, destinations, and personal travel stories.
+
+## Product direction
+
+The homepage will use a bold editorial style inspired by the supplied reference:
+
+- Oversized condensed `RACHEL KENNEDY` typography
+- Overlapping travel photographs with subtle rotation
+- Bright pill-shaped labels for short supporting text
+- A minimal navigation and generous open space
+- Responsive layouts that preserve the layered composition on smaller screens
+
+The design will take inspiration from the reference without copying its branding or exact composition.
 
 ## Planned stack
 
@@ -12,22 +24,59 @@ A custom blog website for Rachel Kennedy.
 
 ## Version 1
 
-The first release is planned to include:
+### Public website
 
-- A responsive public homepage
-- A page listing published posts
-- Individual blog post pages
-- An About page
-- A protected admin area
-- Create, edit, save as draft, publish, unpublish, and delete post workflows
-- Cover image uploads
-- Categories or tags
+- Responsive editorial homepage
+- Featured journey and recent travel posts
+- Browse posts by location
+- Individual travel-story pages
+- Photo galleries
+- Location and travel-date information
+- About page
+- Likes
+- Moderated comments
 - Basic SEO and social-sharing metadata
 
-## Content model
+### Admin CMS
 
-Each post will include a title, slug, excerpt, content, cover image, category or tags, publication status, and created and updated timestamps.
+- Protected admin sign-in
+- Create and edit travel posts
+- Rich-text post editor
+- Upload a cover image and gallery photos
+- Enter a location, country, and travel dates
+- Save drafts
+- Publish and unpublish posts
+- Review, approve, and remove comments
+- Edit or delete existing posts
+
+## Data model
+
+### Posts
+
+Each post will include:
+
+- Title
+- Slug
+- Excerpt
+- Rich-text content
+- Cover image
+- Location and country
+- Travel start and end dates
+- Publication status
+- Created, updated, and published timestamps
+
+### Post images
+
+Gallery images will include a post reference, image URL, alt text, caption, and display order.
+
+### Likes
+
+Likes will use an anonymous visitor identifier so readers can like a post without creating an account while limiting repeat likes from the same browser.
+
+### Comments
+
+Comments will include a display name, optional private email address, comment text, moderation status, and creation date. New comments will remain hidden until approved by the administrator.
 
 ## Status
 
-Project setup is in progress.
+Requirements and visual direction are defined. Project scaffolding and implementation are next.
