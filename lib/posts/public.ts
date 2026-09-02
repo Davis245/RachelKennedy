@@ -31,6 +31,7 @@ export type JourneyPreview = {
   slug: string;
   title: string;
   excerpt: string;
+  publishedAt: string | null;
   location: string | null;
   country: string | null;
   travelDates: string | null;
@@ -88,6 +89,7 @@ function mapJourneyPreview(post: PublishedPostRow): JourneyPreview {
     slug: post.slug,
     title: post.title,
     excerpt: post.excerpt?.trim() || "Rachel’s full story from this journey is coming soon.",
+    publishedAt: post.published_at,
     location: post.location,
     country: post.country,
     travelDates: formatTravelDates(post.travel_start_date, post.travel_end_date),

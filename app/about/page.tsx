@@ -1,6 +1,17 @@
+import type { Metadata } from "next";
+
 import { AccentPill } from "@/components/ui/accent-pill";
 import { ContentContainer } from "@/components/ui/content-container";
 import { SectionHeading } from "@/components/ui/section-heading";
+import { getCanonicalUrl } from "@/lib/site";
+
+export const metadata: Metadata = {
+  title: "About",
+  description: "Learn about Rachel Kennedy’s approach to travel storytelling and photography.",
+  alternates: {
+    canonical: getCanonicalUrl("/about"),
+  },
+};
 
 export default function AboutPage() {
   return (

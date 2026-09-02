@@ -1,12 +1,65 @@
-/* eslint-disable @next/next/no-img-element */
+import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ContentContainer } from "@/components/ui/content-container";
 import { ImageFrame } from "@/components/ui/image-frame";
 import { formatJourneyPlace, getPublishedJourneyBySlug } from "@/lib/posts/public";
+import { getCanonicalUrl, siteMetadata } from "@/lib/site";
 
 export const revalidate = 300;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const journey = await getPublishedJourneyBySlug(slug);
+
+  if (!journey) {
+    return {
+      title: "Journey not found",
+      robots: {
+        index: false,
+        follow: false,
+      },
+    };
+  }
+
+  const canonicalUrl = getCanonicalUrl(`/journeys/${journey.slug}`);
+  const image = journey.coverImageUrl
+    ? [
+        {
+          url: journey.coverImageUrl,
+          alt: journey.coverImageAlt,
+        },
+      ]
+    : undefined;
+
+  return {
+    title: journey.title,
+    description: journey.excerpt,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      type: "article",
+      url: canonicalUrl,
+      title: journey.title,
+      description: journey.excerpt,
+      siteName: siteMetadata.title,
+      images: image,
+    },
+    twitter: {
+      card: image ? "summary_large_image" : "summary",
+      title: journey.title,
+      description: journey.excerpt,
+      images: image?.map((entry) => entry.url),
+    },
+  };
+}
 
 export default async function JourneyStoryPage({
   params,
@@ -20,9 +73,25 @@ export default async function JourneyStoryPage({
     notFound();
   }
 
+  const canonicalUrl = getCanonicalUrl(`/journeys/${journey.slug}`);
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: journey.title,
+    description: journey.excerpt,
+    url: canonicalUrl,
+    datePublished: journey.publishedAt ?? undefined,
+    image: journey.coverImageUrl ? [journey.coverImageUrl] : undefined,
+    author: {
+      "@type": "Person",
+      name: siteMetadata.title,
+    },
+  };
+
   return (
     <main className="py-12 sm:py-16">
       <ContentContainer className="space-y-8">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
         <Link
           href="/journeys"
           className="inline-flex min-h-11 items-center text-sm font-semibold uppercase tracking-[0.18em] text-[var(--color-accent-blue)]"
@@ -41,7 +110,16 @@ export default async function JourneyStoryPage({
 
           {journey.coverImageUrl ? (
             <ImageFrame rotation="left" className="bg-[var(--color-bg)] p-1">
-              <img src={journey.coverImageUrl} alt={journey.coverImageAlt} className="h-auto w-full" />
+              <div className="relative aspect-[4/3] w-full">
+                <Image
+                  src={journey.coverImageUrl}
+                  alt={journey.coverImageAlt}
+                  fill
+                  sizes="(max-width: 1023px) 100vw, 80vw"
+                  className="object-cover"
+                  priority
+                />
+              </div>
             </ImageFrame>
           ) : null}
 
@@ -59,7 +137,15 @@ export default async function JourneyStoryPage({
                 {journey.galleryImages.map((image) => (
                   <figure key={image.id} className="space-y-3">
                     <ImageFrame rotation="none" className="bg-[var(--color-bg)] p-1">
-                      <img src={image.imageUrl} alt={image.altText} className="h-auto w-full" loading="lazy" />
+                      <div className="relative aspect-[4/3] w-full">
+                        <Image
+                          src={image.imageUrl}
+                          alt={image.altText}
+                          fill
+                          sizes="(max-width: 767px) 100vw, 50vw"
+                          className="object-cover"
+                        />
+                      </div>
                     </ImageFrame>
                     {image.caption ? <figcaption className="text-sm text-[var(--color-muted)]">{image.caption}</figcaption> : null}
                   </figure>
