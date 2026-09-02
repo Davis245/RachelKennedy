@@ -13,9 +13,9 @@ export function SiteHero() {
   const secondHeroPhoto = heroPhotos[1];
 
   return (
-    <main className="overflow-x-clip py-8 sm:py-12">
+    <main className="overflow-x-clip">
       <section
-        className="relative flex min-h-[calc(100svh-6.5rem)] items-center overflow-x-clip px-[clamp(1rem,2vw,2rem)] pb-16"
+        className="relative flex min-h-[100svh] items-center overflow-x-clip px-[clamp(1rem,2vw,2rem)] pb-16 pt-8 sm:pt-12"
         aria-labelledby="homepage-main-heading"
       >
         <div className="relative mx-auto w-full">
