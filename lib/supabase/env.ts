@@ -1,9 +1,9 @@
 export type PublicSupabaseEnv = Readonly<{
   url: string;
-  anonKey: string;
+  publishableKey: string;
 }>;
 
-function requireEnv(name: "NEXT_PUBLIC_SUPABASE_URL" | "NEXT_PUBLIC_SUPABASE_ANON_KEY") {
+function requireEnv(name: "NEXT_PUBLIC_SUPABASE_URL" | "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY") {
   const value = process.env[name];
 
   if (!value) {
@@ -27,9 +27,9 @@ function requireUrlEnv(name: "NEXT_PUBLIC_SUPABASE_URL") {
 
 export function hasPublicSupabaseEnv() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
-  if (!url || !anonKey) {
+  if (!url || !publishableKey) {
     return false;
   }
 
@@ -44,6 +44,6 @@ export function hasPublicSupabaseEnv() {
 export function getPublicSupabaseEnv(): PublicSupabaseEnv {
   return {
     url: requireUrlEnv("NEXT_PUBLIC_SUPABASE_URL"),
-    anonKey: requireEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY"),
+    publishableKey: requireEnv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"),
   };
 }
