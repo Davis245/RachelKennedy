@@ -18,16 +18,16 @@ export function SiteHero() {
         className="relative flex min-h-[calc(100svh-6.5rem)] items-center overflow-x-clip px-4 pb-16 sm:px-6 lg:px-10 xl:px-14"
         aria-labelledby="homepage-main-heading"
       >
-        <div className="relative mx-auto w-full max-w-[120rem] -translate-y-3 sm:-translate-y-4 lg:-translate-y-6">
+        <div className="relative mx-auto w-full max-w-[120rem] px-2 sm:px-4 lg:px-[3.5vw]">
           <h1
             id="homepage-main-heading"
             aria-label="Rachel Kennedy"
-            className="relative z-20 grid grid-cols-2 items-end gap-x-4 gap-y-4 text-[clamp(2.6rem,12vw,6.4rem)] leading-[0.84] uppercase sm:text-[clamp(3.4rem,10vw,8rem)] lg:grid-cols-[max-content_minmax(9rem,14vw)_max-content_minmax(9rem,14vw)] lg:justify-center lg:gap-x-8 lg:text-[clamp(5rem,8.5vw,10rem)] xl:gap-x-10"
+            className="relative z-20 grid grid-cols-2 items-center gap-x-4 gap-y-4 text-[clamp(2.6rem,12vw,6.4rem)] leading-[0.84] uppercase sm:text-[clamp(3.4rem,10vw,8rem)] lg:flex lg:justify-center lg:gap-x-6 lg:text-[clamp(4.8rem,8.1vw,9.4rem)]"
           >
-            <span className="text-[var(--color-ink)]">Rachel</span>
+            <span className="relative z-30 text-[var(--color-ink)]">Rachel</span>
             <ImageFrame
               rotation="left"
-              className="w-full max-w-[12rem] justify-self-start bg-[var(--color-bg)] p-1 shadow-[var(--shadow-frame)] sm:max-w-[13rem] lg:w-[min(14vw,13rem)] lg:max-w-none lg:-translate-y-1"
+              className="relative z-10 w-full max-w-[12rem] justify-self-start bg-[var(--color-bg)] p-1 shadow-[var(--shadow-frame)] sm:max-w-[13rem] lg:-ml-2 lg:w-[min(13vw,12.5rem)] lg:max-w-none"
             >
               <Image
                 src={firstHeroPhoto.src}
@@ -38,10 +38,10 @@ export function SiteHero() {
                 className="h-auto w-full"
               />
             </ImageFrame>
-            <span className="text-[var(--color-accent-coral)]">Kennedy</span>
+            <span className="relative z-30 lg:-ml-2 text-[var(--color-accent-coral)]">Kennedy</span>
             <ImageFrame
               rotation="right"
-              className="w-full max-w-[12rem] justify-self-start bg-[var(--color-bg)] p-1 shadow-[var(--shadow-frame)] sm:max-w-[13rem] lg:w-[min(14vw,13rem)] lg:max-w-none lg:translate-y-1"
+              className="relative z-10 w-full max-w-[12rem] justify-self-start bg-[var(--color-bg)] p-1 shadow-[var(--shadow-frame)] sm:max-w-[13rem] lg:-ml-2 lg:w-[min(13vw,12.5rem)] lg:max-w-none"
             >
               <Image
                 src={secondHeroPhoto.src}
@@ -54,10 +54,10 @@ export function SiteHero() {
             </ImageFrame>
           </h1>
 
-          <div className="pointer-events-none absolute right-[6%] bottom-[16%] z-30 rotate-[1deg] sm:right-[12%] lg:right-[22%]">
+          <div className="pointer-events-none absolute left-1/2 bottom-[13%] z-20 -translate-x-[8%] rotate-[1deg]">
             <AccentPill tone="mustard">{heroPills[0]}</AccentPill>
           </div>
-          <div className="pointer-events-none absolute bottom-[8%] left-[8%] z-30 -rotate-2 sm:left-[16%] lg:left-[24%]">
+          <div className="pointer-events-none absolute left-1/2 bottom-[7%] z-20 -translate-x-[118%] -rotate-2">
             <AccentPill tone="blue">{heroPills[1]}</AccentPill>
           </div>
         </div>
