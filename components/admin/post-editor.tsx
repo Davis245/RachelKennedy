@@ -106,14 +106,6 @@ export function PostEditor({
   mode: "create" | "edit";
 }) {
   const router = useRouter();
-  const [saveState, saveAction] = useActionState<PostEditorState, FormData>(
-    savePostAction,
-    DEFAULT_POST_EDITOR_STATE,
-  );
-  const [deleteState, deleteAction] = useActionState<PostEditorState, FormData>(
-    deletePostAction,
-    DEFAULT_POST_EDITOR_STATE,
-  );
   const redirectedPostId = useRef<string | null>(null);
 
   const [title, setTitle] = useState(initialData.title);
@@ -129,11 +121,28 @@ export function PostEditor({
   const [content, setContent] = useState<JSONContent>(initialData.content);
   const [showPreview, setShowPreview] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [saveState, saveAction] = useActionState<PostEditorState, FormData>(
+    async (previousState, formData) => {
+      const nextState = await savePostAction(previousState, formData);
+
+      if (nextState.status === "success") {
+        setHasUnsavedChanges(false);
+      }
+
+      return nextState;
+    },
+    DEFAULT_POST_EDITOR_STATE,
+  );
+  const [deleteState, deleteAction] = useActionState<PostEditorState, FormData>(
+    deletePostAction,
+    DEFAULT_POST_EDITOR_STATE,
+  );
   const status = saveState.postStatus ?? initialData.status;
 
   const editor = useEditor({
     extensions: [StarterKit],
     content: initialData.content,
+    immediatelyRender: false,
     onUpdate: ({ editor: editorInstance }) => {
       setContent(editorInstance.getJSON());
       setHasUnsavedChanges(true);
