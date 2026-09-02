@@ -33,8 +33,6 @@ The design will take inspiration from the reference without copying its branding
 - Photo galleries
 - Location and travel-date information
 - About page
-- Likes
-- Moderated comments
 - Basic SEO and social-sharing metadata
 
 ### Admin CMS
@@ -46,7 +44,6 @@ The design will take inspiration from the reference without copying its branding
 - Enter a location, country, and travel dates
 - Save drafts
 - Publish and unpublish posts
-- Review, approve, and remove comments
 - Edit or delete existing posts
 
 ## Data model
@@ -80,13 +77,9 @@ When rendered in the UI, rich-text output must be sanitized before display.
 
 Gallery images will include a post reference, image URL, alt text, caption, and display order.
 
-### Likes
+### Deferred features
 
-Likes will use an anonymous visitor identifier so readers can like a post without creating an account while limiting repeat likes from the same browser.
-
-### Comments
-
-Comments will include a display name, optional private email address, comment text, moderation status, and creation date. New comments will remain hidden until approved by the administrator.
+Likes and moderated comments are outside the initial launch scope. Their supporting database objects remain available for a possible future implementation, but they are not exposed in the public site or admin CMS.
 
 ## Supabase setup
 
