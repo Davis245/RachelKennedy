@@ -77,6 +77,42 @@ Likes will use an anonymous visitor identifier so readers can like a post withou
 
 Comments will include a display name, optional private email address, comment text, moderation status, and creation date. New comments will remain hidden until approved by the administrator.
 
+## Supabase setup
+
+1. Create a Supabase project and copy the project URL and publishable key into `.env.local`:
+
+   ```bash
+   cp .env.example .env.local
+   ```
+
+2. Apply the SQL migration in `/supabase/migrations/20260902173500_add_content_foundation.sql`.
+
+   The migration creates:
+
+   - `admin_users`, `posts`, `post_images`, `post_likes`, and `comments`
+   - Row Level Security policies for public readers, comment creation, and admin-only content management
+   - An `approved_comments` view that exposes approved comment text without private email addresses
+   - A public `post_like_totals` view so browsers can read aggregate likes without seeing visitor hashes
+   - A public `post-images` storage bucket with admin-only uploads, updates, and deletes
+
+3. Add the first admin safely after that person has signed in once with Supabase Auth so their `auth.users.id` already exists:
+
+   ```sql
+   insert into public.admin_users (user_id)
+   values ('<existing-auth-user-uuid>');
+   ```
+
+   Run that statement only from a trusted server-side context such as the Supabase SQL editor or another privileged backend workflow.
+
+4. Keep any future `SUPABASE_SERVICE_ROLE_KEY` server-only. Do not expose it to browser code or `NEXT_PUBLIC_*` variables.
+
+5. The application Supabase helpers live in:
+
+   - `/lib/supabase/env.ts` for typed runtime environment validation
+   - `/lib/supabase/client.ts` for browser usage
+   - `/lib/supabase/server.ts` for server-side SSR usage
+   - `/types/supabase.ts` for database types
+
 ## Status
 
 Requirements and visual direction are defined. The initial Next.js scaffold is in place and ready for local development.
