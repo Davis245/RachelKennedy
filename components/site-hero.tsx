@@ -14,21 +14,21 @@ export function SiteHero() {
   return (
     <main className="overflow-x-clip py-8 sm:py-12">
       <section
-        className="relative flex min-h-[calc(100svh-6.5rem)] items-center overflow-x-clip px-[clamp(1rem,2vw,2rem)] pb-16"
+        className="relative flex min-h-[calc(100svh-6.5rem)] items-center overflow-x-clip px-4 pb-16 sm:px-6 lg:px-10 xl:px-14"
         aria-labelledby="homepage-main-heading"
       >
-        <div className="relative mx-auto w-full">
+        <div className="relative mx-auto w-full max-w-[120rem] px-2 sm:px-4 lg:px-[6.5vw]">
           <h1
             id="homepage-main-heading"
             aria-label="Rachel Kennedy"
-            className="relative z-20 grid w-full grid-cols-2 items-center gap-x-4 gap-y-4 text-[clamp(2.6rem,12vw,6.4rem)] leading-[0.84] [font-family:var(--font-hero)] sm:text-[clamp(3.4rem,10vw,8rem)] lg:grid-cols-[auto_minmax(8rem,16.5vw)_auto_minmax(8rem,16.5vw)] lg:justify-between lg:gap-x-0 lg:text-[clamp(4.4rem,6.5vw,8rem)]"
+            className="relative z-20 grid grid-cols-2 items-center gap-x-4 gap-y-4 text-[clamp(2.6rem,12vw,6.4rem)] leading-[0.84] uppercase [font-family:var(--font-hero)] sm:text-[clamp(3.4rem,10vw,8rem)] lg:flex lg:justify-center lg:gap-x-4 lg:text-[clamp(4.6rem,7.9vw,9rem)]"
           >
-            <span className="relative z-30 inline-block origin-center scale-y-[1.14] justify-self-start text-[var(--color-ink)] lg:scale-y-[1.2]">
+            <span className="relative z-30 inline-block origin-center scale-y-[1.14] text-[var(--color-ink)] lg:scale-y-[1.2]">
               Rachel
             </span>
             <ImageFrame
               rotation="left"
-              className="relative z-10 w-full max-w-[13.5rem] justify-self-start bg-[var(--color-bg)] p-1 shadow-[var(--shadow-frame)] sm:max-w-[14.5rem] lg:w-[min(16.5vw,15.5rem)] lg:max-w-none lg:origin-center lg:scale-[1.5] lg:justify-self-center"
+              className="relative z-10 w-full max-w-[13.5rem] justify-self-start bg-[var(--color-bg)] p-1 shadow-[var(--shadow-frame)] sm:max-w-[14.5rem] lg:-ml-9 lg:w-[min(16.5vw,15.5rem)] lg:max-w-none lg:origin-center lg:scale-[1.5]"
             >
               <Image
                 src={firstHeroPhoto.src}
@@ -39,12 +39,12 @@ export function SiteHero() {
                 className="h-auto w-full"
               />
             </ImageFrame>
-            <span className="relative z-30 inline-block origin-center scale-y-[1.14] justify-self-start text-[var(--color-accent-coral)] lg:scale-y-[1.2] lg:justify-self-center">
+            <span className="relative z-30 inline-block origin-center scale-y-[1.14] text-[var(--color-accent-coral)] lg:-ml-3 lg:scale-y-[1.2]">
               Kennedy
             </span>
             <ImageFrame
               rotation="right"
-              className="relative z-10 w-full max-w-[13.5rem] justify-self-start bg-[var(--color-bg)] p-1 shadow-[var(--shadow-frame)] sm:max-w-[14.5rem] lg:w-[min(16.5vw,15.5rem)] lg:max-w-none lg:origin-right lg:scale-[1.5] lg:justify-self-end"
+              className="relative z-10 w-full max-w-[13.5rem] justify-self-start bg-[var(--color-bg)] p-1 shadow-[var(--shadow-frame)] sm:max-w-[14.5rem] lg:-ml-9 lg:w-[min(16.5vw,15.5rem)] lg:max-w-none lg:origin-right lg:scale-[1.5]"
             >
               <Image
                 src={secondHeroPhoto.src}
