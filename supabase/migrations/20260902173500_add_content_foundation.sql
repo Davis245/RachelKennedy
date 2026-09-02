@@ -187,20 +187,6 @@ for delete
 to authenticated
 using (public.is_admin_user(auth.uid()));
 
-create policy "Approved comments on published posts are publicly readable"
-on public.comments
-for select
-to anon, authenticated
-using (
-  moderation_status = 'approved'
-  and exists (
-    select 1
-    from public.posts
-    where posts.id = comments.post_id
-      and posts.status = 'published'
-  )
-);
-
 create policy "Visitors can submit pending comments on published posts"
 on public.comments
 for insert
@@ -221,6 +207,32 @@ for all
 to authenticated
 using (public.is_admin_user(auth.uid()))
 with check (public.is_admin_user(auth.uid()));
+
+-- Keep private_email inaccessible to public readers. RLS filters rows, not
+-- columns, so public comment reads go through this deliberately limited view.
+revoke all on table public.comments from public, anon, authenticated;
+grant insert on table public.comments to anon, authenticated;
+grant select, insert, update, delete on table public.comments to authenticated;
+
+create or replace view public.approved_comments
+with (security_barrier = true)
+as
+select
+  comments.id,
+  comments.post_id,
+  comments.display_name,
+  comments.comment_text,
+  comments.created_at
+from public.comments
+join public.posts on posts.id = comments.post_id
+where comments.moderation_status = 'approved'
+  and posts.status = 'published';
+
+comment on view public.approved_comments is
+  'Public approved comments without the private_email or moderation fields. Admins use the comments table directly.';
+
+revoke all on table public.approved_comments from public;
+grant select on public.approved_comments to anon, authenticated;
 
 create or replace view public.post_like_totals as
 select
