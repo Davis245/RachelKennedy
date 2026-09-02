@@ -82,13 +82,9 @@ When rendered in the UI, rich-text output must be sanitized before display.
 
 Gallery images will include a post reference, image URL, alt text, caption, and display order.
 
-### Likes
+### Deferred features
 
-Likes will use an anonymous visitor identifier so readers can like a post without creating an account while limiting repeat likes from the same browser.
-
-### Comments
-
-Comments will include a display name, optional private email address, comment text, moderation status, and creation date. New comments will remain hidden until approved by the administrator.
+Likes and moderated comments are outside the initial launch scope. Their supporting database objects remain available for a possible future implementation, but they are not exposed in the public site or admin CMS.
 
 ## Environment variables
 
@@ -134,14 +130,14 @@ If you later add server-only workflows (cron jobs, admin scripts, or webhooks), 
    - `/lib/supabase/server.ts` for server-side SSR usage
    - `/types/supabase.ts` for database types
 
-   ## Vercel launch
+## Vercel launch
 
-   1. Import the repository into Vercel.
-   2. Add the environment variables listed above (without changing their names).
-   3. Deploy and confirm:
-      - `/robots.txt` returns disallow rules for `/admin`
-      - `/sitemap.xml` includes the published public routes
-   4. Connect the custom domain in Vercel and ensure `NEXT_PUBLIC_SITE_URL` matches the final `https://` domain.
+1. Import the repository into Vercel.
+2. Add the environment variables listed above (without changing their names).
+3. Deploy and confirm:
+   - `/robots.txt` returns disallow rules for `/admin`
+   - `/sitemap.xml` includes the published public routes
+4. Connect the custom domain in Vercel and ensure `NEXT_PUBLIC_SITE_URL` matches the final `https://` domain.
 
 ## Local setup
 

@@ -42,14 +42,6 @@ function AdminShell({ children, email }: { children: ReactNode; email: string | 
                   Posts
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="/admin/comments"
-                  className="block rounded-md px-3 py-3 hover:bg-[var(--color-accent-blue-soft)]"
-                >
-                  Comments
-                </Link>
-              </li>
             </ul>
           </nav>
 
