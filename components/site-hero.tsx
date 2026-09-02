@@ -18,47 +18,46 @@ export function SiteHero() {
         className="relative flex min-h-[calc(100svh-6.5rem)] items-center overflow-x-clip px-4 pb-16 sm:px-6 lg:px-10 xl:px-14"
         aria-labelledby="homepage-main-heading"
       >
-        <div className="relative mx-auto w-full max-w-[120rem] -translate-y-4 sm:-translate-y-6 lg:-translate-y-8">
+        <div className="relative mx-auto w-full max-w-[120rem] -translate-y-3 sm:-translate-y-4 lg:-translate-y-6">
           <h1
             id="homepage-main-heading"
-            className="relative z-10 text-[clamp(2.7rem,9.3vw,11.6rem)] leading-[0.84] uppercase lg:px-[2vw] lg:tracking-[0.01em]"
+            aria-label="Rachel Kennedy"
+            className="relative z-20 grid grid-cols-2 items-end gap-x-4 gap-y-4 text-[clamp(2.6rem,12vw,6.4rem)] leading-[0.84] uppercase sm:text-[clamp(3.4rem,10vw,8rem)] lg:grid-cols-[max-content_minmax(9rem,14vw)_max-content_minmax(9rem,14vw)] lg:justify-center lg:gap-x-8 lg:text-[clamp(5rem,8.5vw,10rem)] xl:gap-x-10"
           >
-            <span className="flex flex-wrap items-center gap-x-5 gap-y-3 lg:flex-nowrap lg:whitespace-nowrap">
-              <span className="text-[var(--color-ink)]">Rachel</span>
-              <span className="text-[var(--color-accent-coral)]">Kennedy</span>
-            </span>
-          </h1>
-
-          <div className="pointer-events-none absolute top-[47%] left-[54%] z-30 w-[clamp(9rem,15.5vw,13.8rem)] -translate-x-1/2 -translate-y-1/2 sm:left-[56%]">
-            <ImageFrame rotation="left" className="bg-[var(--color-bg)] p-1 shadow-[var(--shadow-frame)]">
+            <span className="text-[var(--color-ink)]">Rachel</span>
+            <ImageFrame
+              rotation="left"
+              className="w-full max-w-[12rem] justify-self-start bg-[var(--color-bg)] p-1 shadow-[var(--shadow-frame)] sm:max-w-[13rem] lg:w-[min(14vw,13rem)] lg:max-w-none lg:-translate-y-1"
+            >
               <Image
                 src={firstHeroPhoto.src}
                 alt={firstHeroPhoto.alt}
                 width={firstHeroPhoto.width}
                 height={firstHeroPhoto.height}
-                sizes="(max-width: 639px) 36vw, (max-width: 1023px) 22vw, 15.5vw"
+                sizes="(max-width: 639px) 42vw, (max-width: 1023px) 28vw, 14vw"
                 className="h-auto w-full"
               />
             </ImageFrame>
-          </div>
-
-          <div className="pointer-events-none absolute top-[44%] right-[4%] z-30 w-[clamp(9rem,15vw,13.2rem)] -translate-y-1/2">
-            <ImageFrame rotation="right" className="bg-[var(--color-bg)] p-1 shadow-[var(--shadow-frame)]">
+            <span className="text-[var(--color-accent-coral)]">Kennedy</span>
+            <ImageFrame
+              rotation="right"
+              className="w-full max-w-[12rem] justify-self-start bg-[var(--color-bg)] p-1 shadow-[var(--shadow-frame)] sm:max-w-[13rem] lg:w-[min(14vw,13rem)] lg:max-w-none lg:translate-y-1"
+            >
               <Image
                 src={secondHeroPhoto.src}
                 alt={secondHeroPhoto.alt}
                 width={secondHeroPhoto.width}
                 height={secondHeroPhoto.height}
-                sizes="(max-width: 639px) 34vw, (max-width: 1023px) 22vw, 15vw"
+                sizes="(max-width: 639px) 42vw, (max-width: 1023px) 28vw, 14vw"
                 className="h-auto w-full"
               />
             </ImageFrame>
-          </div>
+          </h1>
 
-          <div className="pointer-events-none absolute right-[6%] bottom-[18%] z-40 rotate-[1deg] sm:right-[12%] lg:right-[20%]">
+          <div className="pointer-events-none absolute right-[6%] bottom-[16%] z-30 rotate-[1deg] sm:right-[12%] lg:right-[22%]">
             <AccentPill tone="mustard">{heroPills[0]}</AccentPill>
           </div>
-          <div className="pointer-events-none absolute bottom-[10%] left-[8%] z-40 -rotate-2 sm:left-[16%] lg:left-[23%]">
+          <div className="pointer-events-none absolute bottom-[8%] left-[8%] z-30 -rotate-2 sm:left-[16%] lg:left-[24%]">
             <AccentPill tone="blue">{heroPills[1]}</AccentPill>
           </div>
         </div>
