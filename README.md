@@ -79,7 +79,7 @@ Comments will include a display name, optional private email address, comment te
 
 ## Supabase setup
 
-1. Create a Supabase project and copy the project URL and anonymous key into `.env.local`:
+1. Create a Supabase project and copy the project URL and publishable key into `.env.local`:
 
    ```bash
    cp .env.example .env.local
@@ -91,6 +91,7 @@ Comments will include a display name, optional private email address, comment te
 
    - `admin_users`, `posts`, `post_images`, `post_likes`, and `comments`
    - Row Level Security policies for public readers, comment creation, and admin-only content management
+   - An `approved_comments` view that exposes approved comment text without private email addresses
    - A public `post_like_totals` view so browsers can read aggregate likes without seeing visitor hashes
    - A public `post-images` storage bucket with admin-only uploads, updates, and deletes
 
