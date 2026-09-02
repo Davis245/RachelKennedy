@@ -175,19 +175,20 @@ export async function getPublishedJourneyBySlug(slug: string): Promise<JourneySt
     .eq("status", "published")
     .eq("slug", slug)
     .maybeSingle();
+  const post = data as PublishedPostRow | null;
 
   if (error) {
     throw new Error(error.message || "Unable to load this journey.");
   }
 
-  if (!data) {
+  if (!post) {
     return null;
   }
 
   const { data: imageData, error: imageError } = await supabase
     .from("post_images")
     .select("id, image_url, alt_text, caption, display_order")
-    .eq("post_id", data.id)
+    .eq("post_id", post.id)
     .order("display_order", { ascending: true });
 
   if (imageError) {
@@ -195,9 +196,9 @@ export async function getPublishedJourneyBySlug(slug: string): Promise<JourneySt
   }
 
   return {
-    ...mapJourneyPreview(data as PublishedPostRow),
+    ...mapJourneyPreview(post),
     contentHtml: renderRichTextDocumentToSafeHtml(
-      isRichTextDocument(data.content) ? data.content : EMPTY_RICH_TEXT_DOCUMENT,
+      isRichTextDocument(post.content) ? post.content : EMPTY_RICH_TEXT_DOCUMENT,
     ),
     galleryImages: ((imageData ?? []) as PublishedPostImageRow[]).map((image) => ({
       id: image.id,
