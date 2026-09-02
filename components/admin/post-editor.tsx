@@ -14,12 +14,19 @@ import {
   savePostAction,
   type PostEditorState,
 } from "@/app/admin/post-actions";
-import {
-  EMPTY_RICH_TEXT_DOCUMENT,
-  renderRichTextDocumentToSafeHtml,
-} from "@/lib/rich-text";
+import { createPostImageStoragePath, validatePostImageFile } from "@/lib/posts/post-images";
 import { suggestSlugFromTitle } from "@/lib/posts/slug";
+import { EMPTY_RICH_TEXT_DOCUMENT, renderRichTextDocumentToSafeHtml } from "@/lib/rich-text";
+import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import type { PostStatus } from "@/types/supabase";
+
+type GalleryImageData = {
+  id?: string;
+  imageUrl: string;
+  altText: string;
+  caption: string;
+  displayOrder: number;
+};
 
 type PostEditorData = {
   id?: string;
@@ -32,8 +39,13 @@ type PostEditorData = {
   travelEndDate: string;
   coverImageUrl: string;
   coverImageAlt: string;
+  galleryImages: GalleryImageData[];
   content: JSONContent;
   status: PostStatus;
+};
+
+type EditorGalleryImage = GalleryImageData & {
+  localId: string;
 };
 
 const UNSAVED_CHANGES_MESSAGE = "You have unsaved changes. Leave without saving?";
@@ -98,6 +110,34 @@ function DeleteButton({ disabled }: { disabled: boolean }) {
   );
 }
 
+function normalizeGalleryImages(images: EditorGalleryImage[]): EditorGalleryImage[] {
+  return images.map((image, index) => ({
+    ...image,
+    displayOrder: index,
+  }));
+}
+
+function formatUploadStatus(status: "idle" | "uploading" | "success" | "error", message: string) {
+  if (status === "idle" || !message) {
+    return null;
+  }
+
+  return (
+    <p
+      role="status"
+      className={
+        status === "error"
+          ? "text-sm text-[var(--color-accent-coral)]"
+          : status === "success"
+            ? "text-sm text-[var(--color-muted)]"
+            : "text-sm text-[var(--color-muted)]"
+      }
+    >
+      {message}
+    </p>
+  );
+}
+
 export function PostEditor({
   initialData,
   mode,
@@ -107,6 +147,7 @@ export function PostEditor({
 }) {
   const router = useRouter();
   const redirectedPostId = useRef<string | null>(null);
+  const supabaseClientRef = useRef(createBrowserSupabaseClient());
 
   const [title, setTitle] = useState(initialData.title);
   const [slug, setSlug] = useState(initialData.slug || suggestSlugFromTitle(initialData.title));
@@ -118,6 +159,22 @@ export function PostEditor({
   const [travelEndDate, setTravelEndDate] = useState(initialData.travelEndDate);
   const [coverImageUrl, setCoverImageUrl] = useState(initialData.coverImageUrl);
   const [coverImageAlt, setCoverImageAlt] = useState(initialData.coverImageAlt);
+  const [galleryImages, setGalleryImages] = useState<EditorGalleryImage[]>(
+    initialData.galleryImages
+      .sort((leftImage, rightImage) => leftImage.displayOrder - rightImage.displayOrder)
+      .map((image) => ({
+        ...image,
+        localId: image.id ?? crypto.randomUUID(),
+      })),
+  );
+  const [coverUploadState, setCoverUploadState] = useState<{
+    status: "idle" | "uploading" | "success" | "error";
+    message: string;
+  }>({ status: "idle", message: "" });
+  const [galleryUploadState, setGalleryUploadState] = useState<{
+    status: "idle" | "uploading" | "success" | "error";
+    message: string;
+  }>({ status: "idle", message: "" });
   const [content, setContent] = useState<JSONContent>(initialData.content);
   const [showPreview, setShowPreview] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -138,6 +195,7 @@ export function PostEditor({
     DEFAULT_POST_EDITOR_STATE,
   );
   const status = saveState.postStatus ?? initialData.status;
+  const activePostId = saveState.postId ?? initialData.id ?? "";
 
   const editor = useEditor({
     extensions: [StarterKit],
@@ -211,6 +269,105 @@ export function PostEditor({
   const activeStateMessage = deleteState.message || saveState.message;
   const activeStateStatus = deleteState.message ? deleteState.status : saveState.status;
 
+  const uploadToStorage = async ({
+    file,
+    kind,
+  }: {
+    file: File;
+    kind: "cover" | "gallery";
+  }) => {
+    const validationMessage = validatePostImageFile(file);
+
+    if (validationMessage) {
+      throw new Error(validationMessage);
+    }
+
+    if (!activePostId) {
+      throw new Error("Save this post first, then upload images.");
+    }
+
+    const objectPath = createPostImageStoragePath(activePostId, kind, file.name);
+    const supabase = supabaseClientRef.current;
+
+    const { error } = await supabase.storage.from("post-images").upload(objectPath, file, {
+      upsert: false,
+      contentType: file.type,
+    });
+
+    if (error) {
+      throw new Error(error.message || "Upload failed.");
+    }
+
+    const { data } = supabase.storage.from("post-images").getPublicUrl(objectPath);
+
+    return data.publicUrl;
+  };
+
+  const handleCoverUpload = async (file: File | null) => {
+    if (!file) {
+      return;
+    }
+
+    setCoverUploadState({ status: "uploading", message: "Uploading cover image…" });
+
+    try {
+      const publicUrl = await uploadToStorage({ file, kind: "cover" });
+      setCoverImageUrl(publicUrl);
+      setHasUnsavedChanges(true);
+      setCoverUploadState({ status: "success", message: "Cover image uploaded. Save to persist this change." });
+    } catch (error) {
+      setCoverUploadState({
+        status: "error",
+        message: error instanceof Error ? error.message : "Unable to upload cover image.",
+      });
+    }
+  };
+
+  const handleGalleryUpload = async (files: FileList | null) => {
+    if (!files || files.length === 0) {
+      return;
+    }
+
+    const selectedFiles = Array.from(files);
+    const uploadedImages: EditorGalleryImage[] = [];
+    setGalleryUploadState({ status: "uploading", message: `Uploading 1 of ${selectedFiles.length} images…` });
+
+    for (const [index, file] of selectedFiles.entries()) {
+      try {
+        setGalleryUploadState({
+          status: "uploading",
+          message: `Uploading ${index + 1} of ${selectedFiles.length} images…`,
+        });
+        const publicUrl = await uploadToStorage({ file, kind: "gallery" });
+
+        uploadedImages.push({
+          imageUrl: publicUrl,
+          altText: "",
+          caption: "",
+          displayOrder: galleryImages.length + uploadedImages.length,
+          localId: crypto.randomUUID(),
+        });
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : "Unable to upload gallery images.";
+
+        if (uploadedImages.length > 0) {
+          setGalleryImages((currentImages) => normalizeGalleryImages([...currentImages, ...uploadedImages]));
+          setHasUnsavedChanges(true);
+        }
+
+        setGalleryUploadState({ status: "error", message: `${errorMessage} Uploaded ${uploadedImages.length} image(s).` });
+        return;
+      }
+    }
+
+    if (uploadedImages.length > 0) {
+      setGalleryImages((currentImages) => normalizeGalleryImages([...currentImages, ...uploadedImages]));
+      setHasUnsavedChanges(true);
+    }
+
+    setGalleryUploadState({ status: "success", message: "Gallery images uploaded. Save to persist these changes." });
+  };
+
   return (
     <section className="space-y-5 rounded-[var(--radius-frame)] border border-[var(--color-border)] bg-white p-6 shadow-[var(--shadow-frame)] sm:p-8">
       <div className="space-y-3">
@@ -253,8 +410,21 @@ export function PostEditor({
       ) : null}
 
       <form action={saveAction} className="space-y-5">
-        <input type="hidden" name="postId" value={saveState.postId ?? initialData.id ?? ""} />
+        <input type="hidden" name="postId" value={activePostId} />
         <input type="hidden" name="content" value={JSON.stringify(content || EMPTY_RICH_TEXT_DOCUMENT)} />
+        <input
+          type="hidden"
+          name="galleryImages"
+          value={JSON.stringify(
+            galleryImages.map((image, index) => ({
+              id: image.id,
+              imageUrl: image.imageUrl,
+              altText: image.altText,
+              caption: image.caption,
+              displayOrder: index,
+            })),
+          )}
+        />
 
         <div className="grid gap-5 sm:grid-cols-2">
           <div className="space-y-2 sm:col-span-2">
@@ -388,22 +558,49 @@ export function PostEditor({
             <FieldError error={saveState.fieldErrors.travelEndDate} />
           </div>
 
-          <div className="space-y-2 sm:col-span-2">
-            <label htmlFor="coverImageUrl" className="block text-sm font-semibold uppercase tracking-[0.18em]">
-              Cover image URL
-            </label>
-            <input
-              id="coverImageUrl"
-              name="coverImageUrl"
-              type="url"
-              value={coverImageUrl}
-              onChange={(event) => {
-                setCoverImageUrl(event.target.value);
-                setHasUnsavedChanges(true);
-              }}
-              placeholder="https://"
-              className="min-h-11 w-full rounded-[var(--radius-frame)] border border-[var(--color-border)] bg-white px-4 py-3"
-            />
+          <div className="space-y-3 sm:col-span-2">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <label htmlFor="coverImageUpload" className="block text-sm font-semibold uppercase tracking-[0.18em]">
+                Cover image
+              </label>
+              <input
+                id="coverImageUpload"
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/avif"
+                disabled={!activePostId || coverUploadState.status === "uploading"}
+                onChange={(event) => {
+                  void handleCoverUpload(event.target.files?.[0] ?? null);
+                  event.target.value = "";
+                }}
+                className="max-w-full text-sm"
+              />
+            </div>
+            {!activePostId ? <p className="text-sm text-[var(--color-muted)]">Save this post first to upload images.</p> : null}
+            {formatUploadStatus(coverUploadState.status, coverUploadState.message)}
+            {coverImageUrl ? (
+              <div className="space-y-3 rounded-[var(--radius-frame)] border border-[var(--color-border)] p-4">
+                <div className="aspect-[4/3] w-full overflow-hidden rounded-[var(--radius-frame)] bg-[var(--color-accent-blue-soft)]">
+                  <img src={coverImageUrl} alt={coverImageAlt || "Cover preview"} className="h-full w-full object-cover" />
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!window.confirm("Remove the cover image from this post?")) {
+                        return;
+                      }
+                      setCoverImageUrl("");
+                      setCoverImageAlt("");
+                      setHasUnsavedChanges(true);
+                    }}
+                    className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-pill)] border border-[var(--color-accent-coral)] px-4 py-2 text-sm font-semibold uppercase tracking-[0.18em] text-[var(--color-accent-coral)]"
+                  >
+                    Remove cover image
+                  </button>
+                </div>
+              </div>
+            ) : null}
+            <input type="hidden" name="coverImageUrl" value={coverImageUrl} />
             <FieldError error={saveState.fieldErrors.coverImageUrl} />
           </div>
 
@@ -422,6 +619,120 @@ export function PostEditor({
               className="min-h-11 w-full rounded-[var(--radius-frame)] border border-[var(--color-border)] bg-white px-4 py-3"
             />
             <FieldError error={saveState.fieldErrors.coverImageAlt} />
+          </div>
+
+          <div className="space-y-3 sm:col-span-2">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-sm font-semibold uppercase tracking-[0.18em]">Gallery images</p>
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/avif"
+                multiple
+                disabled={!activePostId || galleryUploadState.status === "uploading"}
+                onChange={(event) => {
+                  void handleGalleryUpload(event.target.files);
+                  event.target.value = "";
+                }}
+                className="max-w-full text-sm"
+              />
+            </div>
+            {formatUploadStatus(galleryUploadState.status, galleryUploadState.message)}
+            {galleryImages.length === 0 ? (
+              <p className="text-sm text-[var(--color-muted)]">No gallery images uploaded yet.</p>
+            ) : (
+              <ul className="space-y-4">
+                {galleryImages.map((image, index) => (
+                  <li key={image.localId} className="space-y-3 rounded-[var(--radius-frame)] border border-[var(--color-border)] p-4">
+                    <div className="aspect-[4/3] w-full overflow-hidden rounded-[var(--radius-frame)] bg-[var(--color-accent-blue-soft)]">
+                      <img src={image.imageUrl} alt={image.altText || "Gallery preview"} className="h-full w-full object-cover" />
+                    </div>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <label className="space-y-2 sm:col-span-2">
+                        <span className="block text-xs font-semibold uppercase tracking-[0.18em]">Alt text</span>
+                        <input
+                          value={image.altText}
+                          onChange={(event) => {
+                            const nextValue = event.target.value;
+                            setGalleryImages((currentImages) =>
+                              currentImages.map((currentImage, currentIndex) =>
+                                currentIndex === index ? { ...currentImage, altText: nextValue } : currentImage,
+                              ),
+                            );
+                            setHasUnsavedChanges(true);
+                          }}
+                          className="min-h-11 w-full rounded-[var(--radius-frame)] border border-[var(--color-border)] bg-white px-4 py-3"
+                        />
+                      </label>
+                      <label className="space-y-2 sm:col-span-2">
+                        <span className="block text-xs font-semibold uppercase tracking-[0.18em]">Caption (optional)</span>
+                        <input
+                          value={image.caption}
+                          onChange={(event) => {
+                            const nextValue = event.target.value;
+                            setGalleryImages((currentImages) =>
+                              currentImages.map((currentImage, currentIndex) =>
+                                currentIndex === index ? { ...currentImage, caption: nextValue } : currentImage,
+                              ),
+                            );
+                            setHasUnsavedChanges(true);
+                          }}
+                          className="min-h-11 w-full rounded-[var(--radius-frame)] border border-[var(--color-border)] bg-white px-4 py-3"
+                        />
+                      </label>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        disabled={index === 0}
+                        onClick={() => {
+                          setGalleryImages((currentImages) => {
+                            const nextImages = [...currentImages];
+                            [nextImages[index - 1], nextImages[index]] = [nextImages[index], nextImages[index - 1]];
+                            return normalizeGalleryImages(nextImages);
+                          });
+                          setHasUnsavedChanges(true);
+                        }}
+                        className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-pill)] border border-[var(--color-border)] px-4 py-2 text-sm font-semibold uppercase tracking-[0.18em] disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        Move up
+                      </button>
+                      <button
+                        type="button"
+                        disabled={index === galleryImages.length - 1}
+                        onClick={() => {
+                          setGalleryImages((currentImages) => {
+                            const nextImages = [...currentImages];
+                            [nextImages[index], nextImages[index + 1]] = [nextImages[index + 1], nextImages[index]];
+                            return normalizeGalleryImages(nextImages);
+                          });
+                          setHasUnsavedChanges(true);
+                        }}
+                        className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-pill)] border border-[var(--color-border)] px-4 py-2 text-sm font-semibold uppercase tracking-[0.18em] disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        Move down
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (!window.confirm("Remove this gallery image from the post?")) {
+                            return;
+                          }
+
+                          setGalleryImages((currentImages) =>
+                            normalizeGalleryImages(currentImages.filter((currentImage) => currentImage.localId !== image.localId)),
+                          );
+                          setHasUnsavedChanges(true);
+                        }}
+                        className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-pill)] border border-[var(--color-accent-coral)] px-4 py-2 text-sm font-semibold uppercase tracking-[0.18em] text-[var(--color-accent-coral)]"
+                      >
+                        Remove image
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <FieldError error={saveState.fieldErrors.galleryImages} />
           </div>
         </div>
 
@@ -480,7 +791,7 @@ export function PostEditor({
             }
           }}
         >
-          <input type="hidden" name="postId" value={saveState.postId ?? initialData.id ?? ""} />
+          <input type="hidden" name="postId" value={activePostId} />
           <DeleteButton disabled={!initialData.id} />
         </form>
       ) : null}

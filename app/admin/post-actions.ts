@@ -5,12 +5,21 @@ import type { Database, Json, PostStatus } from "@/types/supabase";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { extractPostImageObjectPath } from "@/lib/posts/post-images";
 import { isRichTextDocument, parseRichTextDocument } from "@/lib/rich-text";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 const intentSchema = z.enum(["save_draft", "publish", "unpublish"]);
+
+const galleryImageSchema = z.object({
+  id: z.string().uuid().optional(),
+  imageUrl: z.url().trim(),
+  altText: z.string().trim().min(1, "Gallery image alt text is required.").max(250),
+  caption: z.string().trim().max(500, "Gallery image caption must be 500 characters or fewer."),
+  displayOrder: z.number().int().nonnegative(),
+});
 
 const postSchema = z
   .object({
@@ -31,6 +40,7 @@ const postSchema = z
     travelEndDate: z.string().trim(),
     coverImageUrl: z.string().trim(),
     coverImageAlt: z.string().trim().max(250, "Cover image alt text must be 250 characters or fewer."),
+    galleryImages: z.array(galleryImageSchema),
     content: z.custom<JSONContent>(isRichTextDocument, {
       message: "Rich-text content is invalid.",
     }),
@@ -67,6 +77,10 @@ const postSchema = z
 
 const postIdSchema = z.string().uuid("Invalid post id.");
 
+type GalleryImagePayload = z.infer<typeof galleryImageSchema>;
+
+type PostImageRow = Pick<Database["public"]["Tables"]["post_images"]["Row"], "image_url">;
+
 type FieldErrors = Partial<
   Record<
     | "title"
@@ -78,6 +92,7 @@ type FieldErrors = Partial<
     | "travelEndDate"
     | "coverImageUrl"
     | "coverImageAlt"
+    | "galleryImages"
     | "content",
     string
   >
@@ -148,6 +163,7 @@ function formatFieldErrors(error: z.ZodError<z.infer<typeof postSchema>>): Field
     travelEndDate: errors.travelEndDate?.[0],
     coverImageUrl: errors.coverImageUrl?.[0],
     coverImageAlt: errors.coverImageAlt?.[0],
+    galleryImages: errors.galleryImages?.[0],
     content: errors.content?.[0],
   };
 }
@@ -161,6 +177,106 @@ function revalidateRoutes(slugs: string[]) {
     revalidatePath(`/posts/${slug}`);
     revalidatePath(`/journeys/${slug}`);
   }
+}
+
+function parseGalleryImages(value: FormDataEntryValue | null) {
+  if (typeof value !== "string" || !value.trim()) {
+    return galleryImageSchema.array().safeParse([]);
+  }
+
+  try {
+    const parsedJson: unknown = JSON.parse(value);
+
+    return galleryImageSchema.array().safeParse(parsedJson);
+  } catch {
+    return galleryImageSchema.array().safeParse(null);
+  }
+}
+
+async function removeStorageObjectIfSafeToDelete(supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>, imageUrl: string) {
+  const objectPath = extractPostImageObjectPath(imageUrl);
+
+  if (!objectPath) {
+    return;
+  }
+
+  const [{ count: coverReferenceCount, error: coverReferenceError }, { count: galleryReferenceCount, error: galleryReferenceError }] =
+    await Promise.all([
+      supabase.from("posts").select("id", { count: "exact", head: true }).eq("cover_image_url", imageUrl),
+      supabase.from("post_images").select("id", { count: "exact", head: true }).eq("image_url", imageUrl),
+    ]);
+
+  if (coverReferenceError || galleryReferenceError) {
+    return;
+  }
+
+  if ((coverReferenceCount ?? 0) > 0 || (galleryReferenceCount ?? 0) > 0) {
+    return;
+  }
+
+  await supabase.storage.from("post-images").remove([objectPath]);
+}
+
+async function syncGalleryImagesForPost({
+  supabase,
+  postId,
+  galleryImages,
+}: {
+  supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>;
+  postId: string;
+  galleryImages: GalleryImagePayload[];
+}) {
+  const { data: existingImagesData, error: existingImagesError } = await supabase
+    .from("post_images")
+    .select("image_url")
+    .eq("post_id", postId);
+
+  if (existingImagesError) {
+    return {
+      ok: false as const,
+      message: existingImagesError.message || "Unable to load existing gallery images.",
+    };
+  }
+
+  const existingImages = (existingImagesData ?? []) as PostImageRow[];
+  const existingUrls = new Set(existingImages.map((record) => record.image_url));
+  const nextUrls = new Set(galleryImages.map((image) => image.imageUrl));
+
+  const removedUrls = [...existingUrls].filter((url) => !nextUrls.has(url));
+
+  const { error: deleteError } = await supabase.from("post_images").delete().eq("post_id", postId);
+
+  if (deleteError) {
+    return {
+      ok: false as const,
+      message: deleteError.message || "Unable to update gallery images.",
+    };
+  }
+
+  if (galleryImages.length > 0) {
+    const { error: insertError } = await supabase.from("post_images").insert(
+      galleryImages.map((image, index) => ({
+        post_id: postId,
+        image_url: image.imageUrl,
+        alt_text: image.altText,
+        caption: image.caption || null,
+        display_order: index,
+      })) as never,
+    );
+
+    if (insertError) {
+      return {
+        ok: false as const,
+        message: insertError.message || "Unable to save gallery images.",
+      };
+    }
+  }
+
+  await Promise.all(removedUrls.map((url) => removeStorageObjectIfSafeToDelete(supabase, url)));
+
+  return {
+    ok: true as const,
+  };
 }
 
 export async function savePostAction(
@@ -203,6 +319,19 @@ export async function savePostAction(
     };
   }
 
+  const parsedGalleryImages = parseGalleryImages(formData.get("galleryImages"));
+
+  if (!parsedGalleryImages.success) {
+    return {
+      status: "error",
+      message: "Please fix the gallery image details and try again.",
+      fieldErrors: {
+        galleryImages: parsedGalleryImages.error.issues[0]?.message ?? "Gallery images are invalid.",
+      },
+      postId,
+    };
+  }
+
   const payload = {
     title: typeof formData.get("title") === "string" ? formData.get("title") : "",
     slug: typeof formData.get("slug") === "string" ? formData.get("slug") : "",
@@ -213,6 +342,7 @@ export async function savePostAction(
     travelEndDate: typeof formData.get("travelEndDate") === "string" ? formData.get("travelEndDate") : "",
     coverImageUrl: typeof formData.get("coverImageUrl") === "string" ? formData.get("coverImageUrl") : "",
     coverImageAlt: typeof formData.get("coverImageAlt") === "string" ? formData.get("coverImageAlt") : "",
+    galleryImages: parsedGalleryImages.data,
     content: parseRichTextDocument(formData.get("content")),
   };
 
@@ -299,6 +429,23 @@ export async function savePostAction(
       };
     }
 
+    const gallerySaveResult = await syncGalleryImagesForPost({
+      supabase: adminContext.supabase,
+      postId: createdPost.id,
+      galleryImages: normalizedPost.galleryImages,
+    });
+
+    if (!gallerySaveResult.ok) {
+      return {
+        status: "error",
+        message: gallerySaveResult.message,
+        fieldErrors: {
+          galleryImages: gallerySaveResult.message,
+        },
+        postId: createdPost.id,
+      };
+    }
+
     revalidateRoutes([createdPost.slug]);
 
     return {
@@ -312,10 +459,10 @@ export async function savePostAction(
 
   const { data: existingPostData } = await adminContext.supabase
     .from("posts")
-    .select("slug")
+    .select("slug, cover_image_url")
     .eq("id", postId)
     .maybeSingle();
-  const existingPost = existingPostData as Pick<Database["public"]["Tables"]["posts"]["Row"], "slug"> | null;
+  const existingPost = existingPostData as Pick<Database["public"]["Tables"]["posts"]["Row"], "slug" | "cover_image_url"> | null;
 
   const { data: updatedPostData, error: updateError } = await adminContext.supabase
     .from("posts")
@@ -344,6 +491,27 @@ export async function savePostAction(
       fieldErrors: {},
       postId,
     };
+  }
+
+  const gallerySaveResult = await syncGalleryImagesForPost({
+    supabase: adminContext.supabase,
+    postId,
+    galleryImages: normalizedPost.galleryImages,
+  });
+
+  if (!gallerySaveResult.ok) {
+    return {
+      status: "error",
+      message: gallerySaveResult.message,
+      fieldErrors: {
+        galleryImages: gallerySaveResult.message,
+      },
+      postId,
+    };
+  }
+
+  if (existingPost?.cover_image_url && existingPost.cover_image_url !== normalizedPost.coverImageUrl) {
+    await removeStorageObjectIfSafeToDelete(adminContext.supabase, existingPost.cover_image_url);
   }
 
   const slugs = [updatedPost.slug];
