@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { AccentPill } from "@/components/ui/accent-pill";
 import { ContentContainer } from "@/components/ui/content-container";
 import { ImageFrame } from "@/components/ui/image-frame";
 import { homePageFixture } from "@/lib/homepage-fixture";
@@ -8,7 +7,7 @@ import { homePageFixture } from "@/lib/homepage-fixture";
 const heroRotations = ["left", "right", "none"] as const;
 
 export function SiteHero() {
-  const { heroPills, heroPhotos, featuredJourney, recentJourneys } = homePageFixture;
+  const { heroPhotos, featuredJourney, recentJourneys } = homePageFixture;
   const firstHeroPhoto = heroPhotos[0];
   const secondHeroPhoto = heroPhotos[1];
 
@@ -22,12 +21,12 @@ export function SiteHero() {
           <h1
             id="homepage-main-heading"
             aria-label="Rachel Kennedy"
-            className="relative z-20 grid grid-cols-2 items-center gap-x-4 gap-y-4 text-[clamp(2.6rem,12vw,6.4rem)] leading-[0.84] uppercase sm:text-[clamp(3.4rem,10vw,8rem)] lg:flex lg:justify-center lg:gap-x-6 lg:text-[clamp(4.8rem,8.1vw,9.4rem)]"
+            className="relative z-20 grid grid-cols-2 items-center gap-x-4 gap-y-4 text-[clamp(2.6rem,12vw,6.4rem)] leading-[0.84] uppercase sm:text-[clamp(3.4rem,10vw,8rem)] lg:flex lg:justify-center lg:gap-x-4 lg:text-[clamp(4.6rem,7.9vw,9rem)]"
           >
             <span className="relative z-30 text-[var(--color-ink)]">Rachel</span>
             <ImageFrame
               rotation="left"
-              className="relative z-10 w-full max-w-[12rem] justify-self-start bg-[var(--color-bg)] p-1 shadow-[var(--shadow-frame)] sm:max-w-[13rem] lg:-ml-2 lg:w-[min(13vw,12.5rem)] lg:max-w-none"
+              className="relative z-10 w-full max-w-[12.75rem] justify-self-start bg-[var(--color-bg)] p-1 shadow-[var(--shadow-frame)] sm:max-w-[13.75rem] lg:-ml-4 lg:w-[min(14vw,13.5rem)] lg:max-w-none"
             >
               <Image
                 src={firstHeroPhoto.src}
@@ -41,7 +40,7 @@ export function SiteHero() {
             <span className="relative z-30 lg:-ml-2 text-[var(--color-accent-coral)]">Kennedy</span>
             <ImageFrame
               rotation="right"
-              className="relative z-10 w-full max-w-[12rem] justify-self-start bg-[var(--color-bg)] p-1 shadow-[var(--shadow-frame)] sm:max-w-[13rem] lg:-ml-2 lg:w-[min(13vw,12.5rem)] lg:max-w-none"
+              className="relative z-10 w-full max-w-[12.75rem] justify-self-start bg-[var(--color-bg)] p-1 shadow-[var(--shadow-frame)] sm:max-w-[13.75rem] lg:-ml-4 lg:w-[min(14vw,13.5rem)] lg:max-w-none"
             >
               <Image
                 src={secondHeroPhoto.src}
@@ -53,13 +52,6 @@ export function SiteHero() {
               />
             </ImageFrame>
           </h1>
-
-          <div className="pointer-events-none absolute left-1/2 bottom-[13%] z-20 -translate-x-[8%] rotate-[1deg]">
-            <AccentPill tone="mustard">{heroPills[0]}</AccentPill>
-          </div>
-          <div className="pointer-events-none absolute left-1/2 bottom-[7%] z-20 -translate-x-[118%] -rotate-2">
-            <AccentPill tone="blue">{heroPills[1]}</AccentPill>
-          </div>
         </div>
 
         <Link
