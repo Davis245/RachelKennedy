@@ -1,0 +1,8 @@
+<svg width="900" height="1125" viewBox="0 0 900 1125" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="900" height="1125" fill="#E6EDF9"/>
+  <rect x="92" y="118" width="716" height="888" rx="34" fill="#3269AD"/>
+  <circle cx="300" cy="400" r="98" fill="#F4E3B2"/>
+  <circle cx="600" cy="460" r="88" fill="#FFD8D0"/>
+  <path d="M170 760C272 678 637 646 730 736V886H170V760Z" fill="#1F1A17"/>
+  <text x="450" y="940" text-anchor="middle" font-size="44" font-family="Arial, sans-serif" letter-spacing="6" fill="#F7F3EE">TEMP KYOTO</text>
+</svg>

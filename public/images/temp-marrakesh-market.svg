@@ -1,0 +1,8 @@
+<svg width="900" height="1125" viewBox="0 0 900 1125" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="900" height="1125" fill="#FFF3E2"/>
+  <rect x="92" y="118" width="716" height="888" rx="34" fill="#F4E3B2"/>
+  <rect x="174" y="240" width="552" height="560" rx="26" fill="#EA6D58"/>
+  <path d="M174 688C262 636 643 636 726 688V800H174V688Z" fill="#BB8B16"/>
+  <circle cx="450" cy="520" r="120" fill="#FFD8D0"/>
+  <text x="450" y="940" text-anchor="middle" font-size="44" font-family="Arial, sans-serif" letter-spacing="6" fill="#1F1A17">TEMP MARRAKESH</text>
+</svg>

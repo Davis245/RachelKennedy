@@ -1,0 +1,8 @@
+<svg width="900" height="1125" viewBox="0 0 900 1125" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="900" height="1125" fill="#EEF4FF"/>
+  <rect x="92" y="118" width="716" height="888" rx="34" fill="#DCE9F9"/>
+  <path d="M130 805L298 510L430 686L548 470L770 805H130Z" fill="#3269AD"/>
+  <path d="M548 470L603 583H492L548 470Z" fill="#F7F8FB"/>
+  <path d="M298 510L336 575H258L298 510Z" fill="#F7F8FB"/>
+  <text x="450" y="940" text-anchor="middle" font-size="44" font-family="Arial, sans-serif" letter-spacing="6" fill="#1F1A17">TEMP PATAGONIA</text>
+</svg>

@@ -1,0 +1,9 @@
+<svg width="900" height="1125" viewBox="0 0 900 1125" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="900" height="1125" fill="#F7E6D9"/>
+  <rect x="90" y="115" width="720" height="890" rx="34" fill="#EA6D58"/>
+  <rect x="150" y="220" width="600" height="600" rx="24" fill="#FFD8D0"/>
+  <path d="M185 676C322 584 580 584 715 676V820H185V676Z" fill="#1F1A17"/>
+  <rect x="235" y="430" width="140" height="140" rx="18" fill="#1F1A17"/>
+  <rect x="525" y="430" width="140" height="140" rx="18" fill="#1F1A17"/>
+  <text x="450" y="930" text-anchor="middle" font-size="44" font-family="Arial, sans-serif" letter-spacing="6" fill="#1F1A17">TEMP LISBON</text>
+</svg>
