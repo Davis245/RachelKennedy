@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { Dancing_Script } from "next/font/google";
 import localFont from "next/font/local";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -19,9 +18,8 @@ const displayCondensed = localFont({
   display: "swap",
 });
 
-const heroDisplay = Dancing_Script({
-  subsets: ["latin"],
-  weight: "700",
+const heroDisplay = localFont({
+  src: "./fonts/Bungee-Regular.ttf",
   variable: "--font-hero-display",
   display: "swap",
 });
