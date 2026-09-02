@@ -58,6 +58,14 @@ h4 {
   font-family: var(--font-hero-display), cursive;
 }
 
+.skip-link {
+  transform: translateY(-200%);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
 a,
 button {
   transition: color 120ms ease, background-color 120ms ease, border-color 120ms ease,

@@ -1,4 +1,5 @@
-/* eslint-disable @next/next/no-img-element */
+import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 
 import { AccentPill } from "@/components/ui/accent-pill";
@@ -6,8 +7,17 @@ import { ContentContainer } from "@/components/ui/content-container";
 import { ImageFrame } from "@/components/ui/image-frame";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { formatJourneyPlace, getJourneyFilters, getPublishedJourneys } from "@/lib/posts/public";
+import { getCanonicalUrl } from "@/lib/site";
 
 export const revalidate = 300;
+
+export const metadata: Metadata = {
+  title: "Journeys",
+  description: "Browse Rachel Kennedy’s published travel stories by destination.",
+  alternates: {
+    canonical: getCanonicalUrl("/journeys"),
+  },
+};
 
 function getSingleSearchParam(value: string | string[] | undefined) {
   return typeof value === "string" ? value : undefined;
@@ -169,12 +179,15 @@ export default async function JourneysPage({
               >
                 {journey.coverImageUrl ? (
                   <ImageFrame rotation="left" className="bg-[var(--color-bg)] p-1">
-                    <img
-                      src={journey.coverImageUrl}
-                      alt={journey.coverImageAlt}
-                      className="h-auto w-full"
-                      loading="lazy"
-                    />
+                    <div className="relative aspect-[4/3] w-full">
+                      <Image
+                        src={journey.coverImageUrl}
+                        alt={journey.coverImageAlt}
+                        fill
+                        sizes="(max-width: 767px) 100vw, (max-width: 1279px) 50vw, 33vw"
+                        className="object-cover"
+                      />
+                    </div>
                   </ImageFrame>
                 ) : (
                   <div className="rounded-[var(--radius-frame)] border border-dashed border-[var(--color-border)] bg-[var(--color-bg)] p-8 text-sm text-[var(--color-muted)]">

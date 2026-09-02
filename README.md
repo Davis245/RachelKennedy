@@ -33,9 +33,7 @@ The design will take inspiration from the reference without copying its branding
 - Photo galleries
 - Location and travel-date information
 - About page
-- Likes
-- Moderated comments
-- Basic SEO and social-sharing metadata
+- SEO metadata, canonical URLs, sitemap, robots, and social sharing previews
 
 ### Admin CMS
 
@@ -46,8 +44,12 @@ The design will take inspiration from the reference without copying its branding
 - Enter a location, country, and travel dates
 - Save drafts
 - Publish and unpublish posts
-- Review, approve, and remove comments
 - Edit or delete existing posts
+
+### Deferred after launch
+
+- Likes
+- Comments and moderation tools
 
 ## Data model
 
@@ -88,6 +90,16 @@ Likes will use an anonymous visitor identifier so readers can like a post withou
 
 Comments will include a display name, optional private email address, comment text, moderation status, and creation date. New comments will remain hidden until approved by the administrator.
 
+## Environment variables
+
+Set these variables in both local `.env.local` (for development) and Vercel project settings (for production):
+
+- `NEXT_PUBLIC_SITE_URL`
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+
+If you later add server-only workflows (cron jobs, admin scripts, or webhooks), keep any service role key private and never expose it through `NEXT_PUBLIC_*`.
+
 ## Supabase setup
 
 1. Create a Supabase project and copy the project URL and publishable key into `.env.local`:
@@ -115,18 +127,21 @@ Comments will include a display name, optional private email address, comment te
 
    Run that statement only from a trusted server-side context such as the Supabase SQL editor or another privileged backend workflow.
 
-4. Keep any future `SUPABASE_SERVICE_ROLE_KEY` server-only. Do not expose it to browser code or `NEXT_PUBLIC_*` variables.
-
-5. The application Supabase helpers live in:
+4. The application Supabase helpers live in:
 
    - `/lib/supabase/env.ts` for typed runtime environment validation
    - `/lib/supabase/client.ts` for browser usage
    - `/lib/supabase/server.ts` for server-side SSR usage
    - `/types/supabase.ts` for database types
 
-## Status
+   ## Vercel launch
 
-Requirements and visual direction are defined. The initial Next.js scaffold is in place and ready for local development.
+   1. Import the repository into Vercel.
+   2. Add the environment variables listed above (without changing their names).
+   3. Deploy and confirm:
+      - `/robots.txt` returns disallow rules for `/admin`
+      - `/sitemap.xml` includes the published public routes
+   4. Connect the custom domain in Vercel and ensure `NEXT_PUBLIC_SITE_URL` matches the final `https://` domain.
 
 ## Local setup
 
@@ -136,7 +151,7 @@ Requirements and visual direction are defined. The initial Next.js scaffold is i
    npm install
    ```
 
-2. Copy the example environment file if you need local environment variables later:
+2. Copy the example environment file:
 
    ```bash
    cp .env.example .env.local
@@ -150,8 +165,21 @@ Requirements and visual direction are defined. The initial Next.js scaffold is i
 
 4. Open `http://localhost:3000` to view the site.
 
-5. Create a production build locally when needed:
+5. Lint and build before launch:
 
    ```bash
+   npm run lint
    npm run build
    ```
+
+## Launch checklist
+
+- [ ] Supabase migration has been applied.
+- [ ] `post-images` storage bucket exists and upload policies are in place.
+- [ ] At least one admin account has signed in and been inserted into `public.admin_users`.
+- [ ] Vercel environment variables are configured with production values.
+- [ ] Production deployment succeeds and public routes render.
+- [ ] `robots.txt` and `sitemap.xml` are reachable in production.
+- [ ] Custom domain is connected and `NEXT_PUBLIC_SITE_URL` matches it.
+- [ ] Draft posts are not publicly visible, and `/admin` is not indexed.
+- [ ] Final content and metadata review is complete for all published journeys.

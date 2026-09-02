@@ -623,8 +623,11 @@ export function PostEditor({
 
           <div className="space-y-3 sm:col-span-2">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className="text-sm font-semibold uppercase tracking-[0.18em]">Gallery images</p>
+              <label htmlFor="galleryImageUpload" className="text-sm font-semibold uppercase tracking-[0.18em]">
+                Gallery images
+              </label>
               <input
+                id="galleryImageUpload"
                 type="file"
                 accept="image/jpeg,image/png,image/webp,image/avif"
                 multiple
