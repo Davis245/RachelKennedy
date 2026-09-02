@@ -13,7 +13,7 @@ const bodySans = localFont({
 });
 
 const displayCondensed = localFont({
-  src: "./fonts/DejaVuSansCondensed-Bold.ttf",
+  src: "./fonts/BebasNeue-Regular.ttf",
   variable: "--font-display-condensed",
   display: "swap",
 });
