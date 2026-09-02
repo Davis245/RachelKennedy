@@ -1,9 +1,84 @@
 @import "tailwindcss";
 
+:root {
+  --color-bg: #f5f1eb;
+  --color-ink: #1f1a17;
+  --color-muted: #6c625a;
+  --color-border: #cec4b8;
+  --color-accent-coral: #ea6d58;
+  --color-accent-coral-soft: #ffd8d0;
+  --color-accent-blue: #3269ad;
+  --color-accent-blue-soft: #dce9f9;
+  --color-accent-mustard: #bb8b16;
+  --color-accent-mustard-soft: #f4e3b2;
+
+  --font-body: var(--font-body-sans), "Inter", "Avenir Next", "Segoe UI", sans-serif;
+  --font-display: var(--font-display-condensed), "Arial Narrow", "Inter", sans-serif;
+
+  --font-size-body: 1rem;
+  --line-height-body: 1.7;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+
+  --radius-pill: 999px;
+  --radius-frame: 0.75rem;
+  --shadow-frame: 0 12px 24px rgba(31, 26, 23, 0.14);
+  --focus-ring: 3px solid color-mix(in srgb, var(--color-accent-blue), white 10%);
+}
+
 html {
   scroll-behavior: smooth;
 }
 
 body {
   min-height: 100vh;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  letter-spacing: 0.02em;
+}
+
+a,
+button {
+  transition: color 120ms ease, background-color 120ms ease, border-color 120ms ease,
+    transform 160ms ease;
+}
+
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
 }
