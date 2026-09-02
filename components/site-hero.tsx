@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { ScrollIndicator } from "@/components/scroll-indicator";
 import { ContentContainer } from "@/components/ui/content-container";
 import { ImageFrame } from "@/components/ui/image-frame";
 import { homePageFixture } from "@/lib/homepage-fixture";
@@ -21,7 +22,7 @@ export function SiteHero() {
           <h1
             id="homepage-main-heading"
             aria-label="Rachel Kennedy"
-            className="hero-title relative z-20 grid w-full grid-cols-2 items-center gap-x-4 gap-y-4 text-[clamp(3rem,13.5vw,7.2rem)] leading-[0.84] sm:text-[clamp(3.8rem,11.5vw,9.2rem)] lg:grid-cols-[auto_minmax(8rem,16.5vw)_auto_minmax(8rem,16.5vw)] lg:justify-between lg:gap-x-0 lg:text-[clamp(5.2rem,9.2vw,11.5rem)]"
+            className="hero-title relative z-20 grid w-full grid-cols-2 items-center gap-x-4 gap-y-4 text-[clamp(3.3rem,15vw,8rem)] leading-[0.84] sm:text-[clamp(4.2rem,12.5vw,10.2rem)] lg:grid-cols-[auto_minmax(8rem,16.5vw)_auto_minmax(8rem,16.5vw)] lg:justify-between lg:gap-x-0 lg:text-[clamp(5.8rem,10.4vw,13rem)]"
           >
             <span className="relative z-30 inline-block origin-center scale-y-[1.18] text-[var(--color-ink)] lg:scale-y-[1.28]">
               Rachel
@@ -58,16 +59,7 @@ export function SiteHero() {
           </h1>
         </div>
 
-        <Link
-          href="#featured-journey-heading"
-          aria-label="Scroll to featured journey"
-          className="absolute bottom-1 left-1/2 inline-flex -translate-x-1/2 flex-col items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)] motion-safe:animate-bounce"
-        >
-          <span>Scroll</span>
-          <span aria-hidden="true" className="text-lg leading-none">
-            ↓
-          </span>
-        </Link>
+        <ScrollIndicator />
       </section>
 
       <ContentContainer className="space-y-14 sm:space-y-16">
