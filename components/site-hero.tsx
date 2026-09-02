@@ -23,12 +23,12 @@ export function SiteHero() {
             aria-label="Rachel Kennedy"
             className="relative z-20 grid w-full grid-cols-2 items-center gap-x-4 gap-y-4 text-[clamp(2.6rem,12vw,6.4rem)] leading-[0.84] uppercase [font-family:var(--font-hero)] sm:text-[clamp(3.4rem,10vw,8rem)] lg:grid-cols-[auto_minmax(8rem,16.5vw)_auto_minmax(8rem,16.5vw)] lg:justify-between lg:gap-x-0 lg:text-[clamp(4.6rem,7.9vw,9rem)]"
           >
-            <span className="relative z-30 inline-block origin-center scale-y-[1.14] text-[var(--color-ink)] lg:scale-y-[1.2]">
+            <span className="relative z-30 inline-block origin-center scale-y-[1.18] text-[var(--color-ink)] lg:scale-y-[1.28]">
               Rachel
             </span>
             <ImageFrame
               rotation="left"
-              className="relative z-10 w-full max-w-[13.5rem] justify-self-start bg-[var(--color-bg)] p-1 shadow-[var(--shadow-frame)] sm:max-w-[14.5rem] lg:-ml-9 lg:w-[min(16.5vw,15.5rem)] lg:max-w-none lg:origin-center lg:scale-[1.5]"
+              className="relative z-10 w-full max-w-[13.5rem] justify-self-start bg-[var(--color-bg)] p-1 shadow-[var(--shadow-frame)] sm:max-w-[14.5rem] lg:-ml-9 lg:w-[min(16.5vw,15.5rem)] lg:max-w-none lg:origin-center lg:scale-[1.25]"
             >
               <Image
                 src={firstHeroPhoto.src}
@@ -39,12 +39,12 @@ export function SiteHero() {
                 className="h-auto w-full"
               />
             </ImageFrame>
-            <span className="relative z-30 inline-block origin-center scale-y-[1.14] text-[var(--color-accent-coral)] lg:-ml-3 lg:scale-y-[1.2]">
+            <span className="relative z-30 inline-block origin-center scale-y-[1.18] text-[var(--color-accent-coral)] lg:-ml-3 lg:scale-y-[1.28]">
               Kennedy
             </span>
             <ImageFrame
               rotation="right"
-              className="relative z-10 w-full max-w-[13.5rem] justify-self-start bg-[var(--color-bg)] p-1 shadow-[var(--shadow-frame)] sm:max-w-[14.5rem] lg:-ml-9 lg:w-[min(16.5vw,15.5rem)] lg:max-w-none lg:origin-right lg:scale-[1.5]"
+              className="relative z-10 w-full max-w-[13.5rem] justify-self-start bg-[var(--color-bg)] p-1 shadow-[var(--shadow-frame)] sm:max-w-[14.5rem] lg:-ml-9 lg:w-[min(16.5vw,15.5rem)] lg:max-w-none lg:origin-right lg:scale-[1.25]"
             >
               <Image
                 src={secondHeroPhoto.src}
