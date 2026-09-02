@@ -28,9 +28,23 @@ const marrakeshImage = {
   height: 1125,
 };
 
+const heroCoastPhoto = {
+  src: "/images/temp-hero-coast-photo.jpg",
+  alt: "Temporary coastal cliff travel photo placeholder that will be replaced with Rachel's own image",
+  width: 900,
+  height: 1125,
+};
+
+const heroRidgePhoto = {
+  src: "/images/temp-hero-ridge-photo.jpg",
+  alt: "Temporary mountain ridge travel photo placeholder that will be replaced with Rachel's own image",
+  width: 900,
+  height: 1125,
+};
+
 export const homePageFixture: HomePageFixture = {
   heroPills: ["Travel stories & photographs", "Notes from places near and far"],
-  heroPhotos: [lisbonImage, kyotoImage, patagoniaImage],
+  heroPhotos: [heroCoastPhoto, heroRidgePhoto],
   featuredJourney: {
     slug: "coastal-trains-through-portugal",
     title: "Coastal Trains Through Portugal",

@@ -11,7 +11,6 @@ export function SiteHero() {
   const { heroPills, heroPhotos, featuredJourney, recentJourneys } = homePageFixture;
   const firstHeroPhoto = heroPhotos[0];
   const secondHeroPhoto = heroPhotos[1];
-  const thirdHeroPhoto = heroPhotos[2];
 
   return (
     <main className="overflow-x-clip py-8 sm:py-12">
@@ -19,57 +18,47 @@ export function SiteHero() {
         className="relative flex min-h-[calc(100svh-6.5rem)] items-center overflow-x-clip px-4 pb-16 sm:px-6 lg:px-10 xl:px-14"
         aria-labelledby="homepage-main-heading"
       >
-        <div className="relative mx-auto w-full max-w-[110rem]">
-          <h1 id="homepage-main-heading" className="relative z-10 text-[clamp(3.15rem,12.8vw,14.8rem)] leading-[0.82] uppercase">
-            <span className="flex flex-wrap items-center gap-x-5 gap-y-3 lg:flex-nowrap">
+        <div className="relative mx-auto w-full max-w-[120rem] -translate-y-4 sm:-translate-y-6 lg:-translate-y-8">
+          <h1
+            id="homepage-main-heading"
+            className="relative z-10 text-[clamp(2.7rem,9.3vw,11.6rem)] leading-[0.84] uppercase lg:px-[2vw] lg:tracking-[0.01em]"
+          >
+            <span className="flex flex-wrap items-center gap-x-5 gap-y-3 lg:flex-nowrap lg:whitespace-nowrap">
               <span className="text-[var(--color-ink)]">Rachel</span>
               <span className="text-[var(--color-accent-coral)]">Kennedy</span>
             </span>
           </h1>
 
-          <div className="pointer-events-none absolute top-[48%] left-[54%] z-30 w-[clamp(8.5rem,19vw,18rem)] -translate-x-1/2 -translate-y-1/2">
+          <div className="pointer-events-none absolute top-[47%] left-[54%] z-30 w-[clamp(9rem,15.5vw,13.8rem)] -translate-x-1/2 -translate-y-1/2 sm:left-[56%]">
             <ImageFrame rotation="left" className="bg-[var(--color-bg)] p-1 shadow-[var(--shadow-frame)]">
               <Image
                 src={firstHeroPhoto.src}
                 alt={firstHeroPhoto.alt}
                 width={firstHeroPhoto.width}
                 height={firstHeroPhoto.height}
-                sizes="(max-width: 639px) 34vw, (max-width: 1023px) 23vw, 19vw"
+                sizes="(max-width: 639px) 36vw, (max-width: 1023px) 22vw, 15.5vw"
                 className="h-auto w-full"
               />
             </ImageFrame>
           </div>
 
-          <div className="pointer-events-none absolute top-[45%] right-[2%] z-30 w-[clamp(7.5rem,17vw,16rem)] -translate-y-1/2">
+          <div className="pointer-events-none absolute top-[44%] right-[4%] z-30 w-[clamp(9rem,15vw,13.2rem)] -translate-y-1/2">
             <ImageFrame rotation="right" className="bg-[var(--color-bg)] p-1 shadow-[var(--shadow-frame)]">
               <Image
                 src={secondHeroPhoto.src}
                 alt={secondHeroPhoto.alt}
                 width={secondHeroPhoto.width}
                 height={secondHeroPhoto.height}
-                sizes="(max-width: 639px) 30vw, (max-width: 1023px) 20vw, 17vw"
+                sizes="(max-width: 639px) 34vw, (max-width: 1023px) 22vw, 15vw"
                 className="h-auto w-full"
               />
             </ImageFrame>
           </div>
 
-          <div className="pointer-events-none absolute bottom-[7%] left-[6%] z-20 hidden w-[clamp(6rem,10vw,10rem)] sm:block">
-            <ImageFrame rotation="none" className="bg-[var(--color-bg)] p-1 shadow-[var(--shadow-frame)]">
-              <Image
-                src={thirdHeroPhoto.src}
-                alt={thirdHeroPhoto.alt}
-                width={thirdHeroPhoto.width}
-                height={thirdHeroPhoto.height}
-                sizes="(max-width: 1023px) 16vw, 10vw"
-                className="h-auto w-full"
-              />
-            </ImageFrame>
-          </div>
-
-          <div className="pointer-events-none absolute right-[4%] bottom-[18%] z-40 rotate-[1deg] sm:right-[10%] lg:right-[18%]">
+          <div className="pointer-events-none absolute right-[6%] bottom-[18%] z-40 rotate-[1deg] sm:right-[12%] lg:right-[20%]">
             <AccentPill tone="mustard">{heroPills[0]}</AccentPill>
           </div>
-          <div className="pointer-events-none absolute bottom-[8%] left-[6%] z-40 -rotate-2 sm:left-[17%] lg:left-[26%]">
+          <div className="pointer-events-none absolute bottom-[10%] left-[8%] z-40 -rotate-2 sm:left-[16%] lg:left-[23%]">
             <AccentPill tone="blue">{heroPills[1]}</AccentPill>
           </div>
         </div>
