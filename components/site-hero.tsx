@@ -11,67 +11,86 @@ export function SiteHero() {
   const { heroPills, heroPhotos, featuredJourney, recentJourneys } = homePageFixture;
   const firstHeroPhoto = heroPhotos[0];
   const secondHeroPhoto = heroPhotos[1];
+  const thirdHeroPhoto = heroPhotos[2];
 
   return (
-    <main className="overflow-x-clip py-10 sm:py-14">
-      <ContentContainer className="space-y-14 sm:space-y-16">
-        <section
-          className="relative flex min-h-[calc(100svh-8rem)] items-center overflow-x-clip pb-16"
-          aria-labelledby="homepage-main-heading"
-        >
-          <div className="relative z-10 w-full space-y-6">
-            <div className="flex flex-wrap gap-3">
-              <AccentPill tone="mustard">{heroPills[0]}</AccentPill>
-              <AccentPill tone="coral">{heroPills[1]}</AccentPill>
-            </div>
+    <main className="overflow-x-clip py-8 sm:py-12">
+      <section
+        className="relative flex min-h-[calc(100svh-6.5rem)] items-center overflow-x-clip px-4 pb-16 sm:px-6 lg:px-10 xl:px-14"
+        aria-labelledby="homepage-main-heading"
+      >
+        <div className="relative mx-auto w-full max-w-[110rem]">
+          <h1 id="homepage-main-heading" className="relative z-10 text-[clamp(3.15rem,12.8vw,14.8rem)] leading-[0.82] uppercase">
+            <span className="flex flex-wrap items-center gap-x-5 gap-y-3 lg:flex-nowrap">
+              <span className="text-[var(--color-ink)]">Rachel</span>
+              <span className="text-[var(--color-accent-coral)]">Kennedy</span>
+            </span>
+          </h1>
 
-            <h1
-              id="homepage-main-heading"
-              className="text-[clamp(2.25rem,7.2vw,7.6rem)] leading-[0.88] uppercase lg:tracking-[0.01em]"
-            >
-              <span className="flex flex-wrap items-end gap-3 sm:gap-4 lg:flex-nowrap">
-                <span className="text-[var(--color-ink)]">Rachel</span>
-                <ImageFrame rotation="left" className="w-18 shrink-0 bg-[var(--color-bg)] p-1 sm:w-22 lg:w-[9vw]">
-                  <Image
-                    src={firstHeroPhoto.src}
-                    alt={firstHeroPhoto.alt}
-                    width={firstHeroPhoto.width}
-                    height={firstHeroPhoto.height}
-                    sizes="(max-width: 639px) 20vw, (max-width: 1023px) 14vw, 9vw"
-                    className="h-auto w-full"
-                  />
-                </ImageFrame>
-                <span className="text-[var(--color-accent-coral)]">Kennedy</span>
-                <ImageFrame rotation="right" className="w-18 shrink-0 bg-[var(--color-bg)] p-1 sm:w-22 lg:w-[9vw]">
-                  <Image
-                    src={secondHeroPhoto.src}
-                    alt={secondHeroPhoto.alt}
-                    width={secondHeroPhoto.width}
-                    height={secondHeroPhoto.height}
-                    sizes="(max-width: 639px) 20vw, (max-width: 1023px) 14vw, 9vw"
-                    className="h-auto w-full"
-                  />
-                </ImageFrame>
-              </span>
-            </h1>
-
-            <p className="max-w-xl text-base text-[var(--color-muted)] sm:text-lg">
-              Dispatches from train windows, mountain roads, and old city streets—travel stories and photographs from
-              near and far.
-            </p>
+          <div className="pointer-events-none absolute top-[48%] left-[54%] z-30 w-[clamp(8.5rem,19vw,18rem)] -translate-x-1/2 -translate-y-1/2">
+            <ImageFrame rotation="left" className="bg-[var(--color-bg)] p-1 shadow-[var(--shadow-frame)]">
+              <Image
+                src={firstHeroPhoto.src}
+                alt={firstHeroPhoto.alt}
+                width={firstHeroPhoto.width}
+                height={firstHeroPhoto.height}
+                sizes="(max-width: 639px) 34vw, (max-width: 1023px) 23vw, 19vw"
+                className="h-auto w-full"
+              />
+            </ImageFrame>
           </div>
 
-          <Link
-            href="#featured-journey-heading"
-            aria-label="Scroll to featured journey"
-            className="absolute bottom-0 left-1/2 inline-flex -translate-x-1/2 flex-col items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)] motion-safe:animate-bounce"
-          >
-            <span>Scroll</span>
-            <span aria-hidden="true" className="text-lg leading-none">
-              ↓
-            </span>
-          </Link>
-        </section>
+          <div className="pointer-events-none absolute top-[45%] right-[2%] z-30 w-[clamp(7.5rem,17vw,16rem)] -translate-y-1/2">
+            <ImageFrame rotation="right" className="bg-[var(--color-bg)] p-1 shadow-[var(--shadow-frame)]">
+              <Image
+                src={secondHeroPhoto.src}
+                alt={secondHeroPhoto.alt}
+                width={secondHeroPhoto.width}
+                height={secondHeroPhoto.height}
+                sizes="(max-width: 639px) 30vw, (max-width: 1023px) 20vw, 17vw"
+                className="h-auto w-full"
+              />
+            </ImageFrame>
+          </div>
+
+          <div className="pointer-events-none absolute bottom-[7%] left-[6%] z-20 hidden w-[clamp(6rem,10vw,10rem)] sm:block">
+            <ImageFrame rotation="none" className="bg-[var(--color-bg)] p-1 shadow-[var(--shadow-frame)]">
+              <Image
+                src={thirdHeroPhoto.src}
+                alt={thirdHeroPhoto.alt}
+                width={thirdHeroPhoto.width}
+                height={thirdHeroPhoto.height}
+                sizes="(max-width: 1023px) 16vw, 10vw"
+                className="h-auto w-full"
+              />
+            </ImageFrame>
+          </div>
+
+          <div className="pointer-events-none absolute right-[4%] bottom-[18%] z-40 rotate-[1deg] sm:right-[10%] lg:right-[18%]">
+            <AccentPill tone="mustard">{heroPills[0]}</AccentPill>
+          </div>
+          <div className="pointer-events-none absolute bottom-[8%] left-[6%] z-40 -rotate-2 sm:left-[17%] lg:left-[26%]">
+            <AccentPill tone="blue">{heroPills[1]}</AccentPill>
+          </div>
+        </div>
+
+        <Link
+          href="#featured-journey-heading"
+          aria-label="Scroll to featured journey"
+          className="absolute bottom-1 left-1/2 inline-flex -translate-x-1/2 flex-col items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)] motion-safe:animate-bounce"
+        >
+          <span>Scroll</span>
+          <span aria-hidden="true" className="text-lg leading-none">
+            ↓
+          </span>
+        </Link>
+      </section>
+
+      <ContentContainer className="space-y-14 sm:space-y-16">
+        <p className="max-w-2xl text-base text-[var(--color-muted)] sm:text-lg">
+          Dispatches from train windows, mountain roads, and old city streets—travel stories and photographs from near
+          and far.
+        </p>
 
         <section aria-labelledby="featured-journey-heading" className="space-y-5">
           <div className="flex items-center justify-between gap-4">
