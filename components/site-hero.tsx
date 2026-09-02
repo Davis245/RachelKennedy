@@ -1,16 +1,19 @@
+/* eslint-disable @next/next/no-img-element */
 import Image from "next/image";
 import Link from "next/link";
 import { ScrollIndicator } from "@/components/scroll-indicator";
 import { ContentContainer } from "@/components/ui/content-container";
 import { ImageFrame } from "@/components/ui/image-frame";
 import { homePageFixture } from "@/lib/homepage-fixture";
+import { formatJourneyPlace, getPublishedJourneys } from "@/lib/posts/public";
 
 const heroRotations = ["left", "right", "none"] as const;
 
-export function SiteHero() {
-  const { heroPhotos, featuredJourney, recentJourneys } = homePageFixture;
-  const firstHeroPhoto = heroPhotos[0];
-  const secondHeroPhoto = heroPhotos[1];
+export async function SiteHero() {
+  const publishedJourneys = await getPublishedJourneys();
+  const [featuredJourney, ...recentJourneys] = publishedJourneys;
+  const firstHeroPhoto = homePageFixture.heroPhotos[0];
+  const secondHeroPhoto = homePageFixture.heroPhotos[1];
 
   return (
     <main className="overflow-x-clip">
@@ -68,82 +71,105 @@ export function SiteHero() {
           and far.
         </p>
 
-        <section aria-labelledby="featured-journey-heading" className="space-y-5">
-          <div className="flex items-center justify-between gap-4">
+        {featuredJourney ? (
+          <>
+            <section aria-labelledby="featured-journey-heading" className="space-y-5">
+              <div className="flex items-center justify-between gap-4">
+                <h2 id="featured-journey-heading" className="text-3xl uppercase sm:text-4xl">
+                  Featured journey
+                </h2>
+                <Link
+                  href="/journeys"
+                  className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--color-accent-blue)] motion-safe:hover:translate-x-0.5"
+                >
+                  View all journeys
+                </Link>
+              </div>
+
+              <article className="grid gap-6 rounded-[var(--radius-frame)] border border-[var(--color-border)] bg-white p-4 sm:p-6 lg:grid-cols-[0.9fr_1.1fr]">
+                {featuredJourney.coverImageUrl ? (
+                  <ImageFrame rotation="left" className="motion-safe:transition-transform motion-safe:hover:-translate-y-1">
+                    <img
+                      src={featuredJourney.coverImageUrl}
+                      alt={featuredJourney.coverImageAlt}
+                      className="h-auto w-full"
+                    />
+                  </ImageFrame>
+                ) : (
+                  <div className="rounded-[var(--radius-frame)] border border-dashed border-[var(--color-border)] bg-[var(--color-bg)]" />
+                )}
+
+                <div className="flex flex-col justify-center space-y-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-muted)]">
+                    {formatJourneyPlace(featuredJourney.location, featuredJourney.country) || "Destination to be announced"}
+                    {featuredJourney.travelDates ? ` · ${featuredJourney.travelDates}` : ""}
+                  </p>
+                  <h3 className="text-3xl uppercase leading-[0.9] sm:text-4xl">{featuredJourney.title}</h3>
+                  <p className="text-[var(--color-muted)]">{featuredJourney.excerpt}</p>
+                  <Link
+                    href={`/journeys/${featuredJourney.slug}`}
+                    className="w-fit text-sm font-semibold uppercase tracking-[0.18em] text-[var(--color-accent-blue)] motion-safe:hover:translate-x-0.5"
+                  >
+                    Read journey notes
+                  </Link>
+                </div>
+              </article>
+            </section>
+
+            {recentJourneys.length > 0 ? (
+              <section aria-labelledby="recent-journeys-heading" className="space-y-5">
+                <h2 id="recent-journeys-heading" className="text-3xl uppercase sm:text-4xl">
+                  Recent journeys
+                </h2>
+                <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                  {recentJourneys.slice(0, 3).map((journey, index) => (
+                    <article
+                      key={journey.slug}
+                      className="space-y-4 rounded-[var(--radius-frame)] border border-[var(--color-border)] bg-white p-4"
+                    >
+                      {journey.coverImageUrl ? (
+                        <ImageFrame
+                          rotation={heroRotations[index]}
+                          className="bg-[var(--color-bg)] p-1 motion-safe:transition-transform motion-safe:hover:-translate-y-1"
+                        >
+                          <img src={journey.coverImageUrl} alt={journey.coverImageAlt} className="h-auto w-full" />
+                        </ImageFrame>
+                      ) : (
+                        <div className="rounded-[var(--radius-frame)] border border-dashed border-[var(--color-border)] bg-[var(--color-bg)] p-8 text-sm text-[var(--color-muted)]">
+                          Cover image coming soon
+                        </div>
+                      )}
+                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-muted)]">
+                        {formatJourneyPlace(journey.location, journey.country) || "Destination to be announced"}
+                        {journey.travelDates ? ` · ${journey.travelDates}` : ""}
+                      </p>
+                      <h3 className="text-2xl uppercase leading-[0.92]">{journey.title}</h3>
+                      <p className="text-sm text-[var(--color-muted)]">{journey.excerpt}</p>
+                      <Link
+                        href={`/journeys/${journey.slug}`}
+                        className="inline-flex text-sm font-semibold uppercase tracking-[0.18em] text-[var(--color-accent-blue)] motion-safe:hover:translate-x-0.5"
+                      >
+                        Read more
+                      </Link>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            ) : null}
+          </>
+        ) : (
+          <section
+            aria-labelledby="featured-journey-heading"
+            className="rounded-[var(--radius-frame)] border border-[var(--color-border)] bg-white p-6 shadow-[var(--shadow-frame)]"
+          >
             <h2 id="featured-journey-heading" className="text-3xl uppercase sm:text-4xl">
               Featured journey
             </h2>
-            <Link
-              href="/journeys"
-              className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--color-accent-blue)] motion-safe:hover:translate-x-0.5"
-            >
-              View all journeys
-            </Link>
-          </div>
-
-          <article className="grid gap-6 rounded-[var(--radius-frame)] border border-[var(--color-border)] bg-white p-4 sm:p-6 lg:grid-cols-[0.9fr_1.1fr]">
-            <ImageFrame rotation="left" className="motion-safe:transition-transform motion-safe:hover:-translate-y-1">
-              <Image
-                src={featuredJourney.coverImage.src}
-                alt={featuredJourney.coverImage.alt}
-                width={featuredJourney.coverImage.width}
-                height={featuredJourney.coverImage.height}
-                sizes="(max-width: 1023px) 100vw, 36vw"
-                className="h-auto w-full"
-              />
-            </ImageFrame>
-
-            <div className="flex flex-col justify-center space-y-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-muted)]">
-                {featuredJourney.location} · {featuredJourney.travelDates}
-              </p>
-              <h3 className="text-3xl uppercase leading-[0.9] sm:text-4xl">{featuredJourney.title}</h3>
-              <p className="text-[var(--color-muted)]">{featuredJourney.excerpt}</p>
-              <Link
-                href="/journeys"
-                className="w-fit text-sm font-semibold uppercase tracking-[0.18em] text-[var(--color-accent-blue)] motion-safe:hover:translate-x-0.5"
-              >
-                Read journey notes
-              </Link>
-            </div>
-          </article>
-        </section>
-
-        <section aria-labelledby="recent-journeys-heading" className="space-y-5">
-          <h2 id="recent-journeys-heading" className="text-3xl uppercase sm:text-4xl">
-            Recent journeys
-          </h2>
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {recentJourneys.map((journey, index) => (
-              <article key={journey.slug} className="space-y-4 rounded-[var(--radius-frame)] border border-[var(--color-border)] bg-white p-4">
-                <ImageFrame
-                  rotation={heroRotations[index]}
-                  className="bg-[var(--color-bg)] p-1 motion-safe:transition-transform motion-safe:hover:-translate-y-1"
-                >
-                  <Image
-                    src={journey.coverImage.src}
-                    alt={journey.coverImage.alt}
-                    width={journey.coverImage.width}
-                    height={journey.coverImage.height}
-                    sizes="(max-width: 767px) 100vw, (max-width: 1279px) 48vw, 31vw"
-                    className="h-auto w-full"
-                  />
-                </ImageFrame>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-muted)]">
-                  {journey.location} · {journey.travelDates}
-                </p>
-                <h3 className="text-2xl uppercase leading-[0.92]">{journey.title}</h3>
-                <p className="text-sm text-[var(--color-muted)]">{journey.excerpt}</p>
-                <Link
-                  href="/journeys"
-                  className="inline-flex text-sm font-semibold uppercase tracking-[0.18em] text-[var(--color-accent-blue)] motion-safe:hover:translate-x-0.5"
-                >
-                  Read more
-                </Link>
-              </article>
-            ))}
-          </div>
-        </section>
+            <p className="mt-3 max-w-2xl text-[var(--color-muted)]">
+              Rachel’s newest published travel story will appear here once the first journey goes live.
+            </p>
+          </section>
+        )}
       </ContentContainer>
     </main>
   );
