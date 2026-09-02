@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { ContentContainer } from "@/components/ui/content-container";
 
 const navItems = [
@@ -12,9 +13,28 @@ const navItems = [
 
 export function SiteHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [hasScrolled, setHasScrolled] = useState(false);
+  const pathname = usePathname();
+  const isHomePage = pathname === "/";
+  const isVisible = !isHomePage || hasScrolled;
+
+  useEffect(() => {
+    const updateScrollState = () => setHasScrolled(window.scrollY > 24);
+
+    updateScrollState();
+    window.addEventListener("scroll", updateScrollState, { passive: true });
+
+    return () => window.removeEventListener("scroll", updateScrollState);
+  }, [pathname]);
 
   return (
-    <header className="border-b border-[var(--color-border)]">
+    <header
+      aria-hidden={!isVisible}
+      inert={!isVisible}
+      className={`${isHomePage ? "fixed inset-x-0 top-0 z-50" : "relative z-50"} border-b border-[var(--color-border)] bg-[var(--color-bg)]/95 backdrop-blur-sm transition-[transform,opacity] duration-300 motion-reduce:transition-none ${
+        isVisible ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-full opacity-0"
+      }`}
+    >
       <ContentContainer className="py-5">
         <div className="flex items-center justify-between gap-4">
           <Link href="/" className="text-lg font-semibold tracking-[0.06em] uppercase">

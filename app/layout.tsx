@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { Dancing_Script } from "next/font/google";
 import localFont from "next/font/local";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -18,6 +19,13 @@ const displayCondensed = localFont({
   display: "swap",
 });
 
+const heroDisplay = Dancing_Script({
+  subsets: ["latin"],
+  weight: "700",
+  variable: "--font-hero-display",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: siteMetadata.title,
   description: siteMetadata.description,
@@ -26,7 +34,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${bodySans.variable} ${displayCondensed.variable} antialiased`}>
+      <body className={`${bodySans.variable} ${displayCondensed.variable} ${heroDisplay.variable} antialiased`}>
         <div className="flex min-h-screen flex-col">
           <SiteHeader />
           <div className="flex-1">{children}</div>
