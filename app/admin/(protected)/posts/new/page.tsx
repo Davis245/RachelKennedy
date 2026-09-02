@@ -15,6 +15,7 @@ export default function AdminNewPostPage() {
         travelEndDate: "",
         coverImageUrl: "",
         coverImageAlt: "",
+        galleryImages: [],
         content: EMPTY_RICH_TEXT_DOCUMENT,
         status: "draft",
       }}
