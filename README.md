@@ -79,4 +79,32 @@ Comments will include a display name, optional private email address, comment te
 
 ## Status
 
-Requirements and visual direction are defined. Project scaffolding and implementation are next.
+Requirements and visual direction are defined. The initial Next.js scaffold is in place and ready for local development.
+
+## Local setup
+
+1. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+2. Copy the example environment file if you need local environment variables later:
+
+   ```bash
+   cp .env.example .env.local
+   ```
+
+3. Start the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+4. Open `http://localhost:3000` to view the site.
+
+5. Create a production build locally when needed:
+
+   ```bash
+   npm run build
+   ```
