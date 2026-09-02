@@ -79,7 +79,7 @@ const postIdSchema = z.string().uuid("Invalid post id.");
 
 type GalleryImagePayload = z.infer<typeof galleryImageSchema>;
 
-type PostImageRow = Pick<Database["public"]["Tables"]["post_images"]["Row"], "image_url">;
+type PostImageRow = Pick<Database["public"]["Tables"]["post_images"]["Row"], "id" | "image_url">;
 
 type FieldErrors = Partial<
   Record<
@@ -228,7 +228,7 @@ async function syncGalleryImagesForPost({
 }) {
   const { data: existingImagesData, error: existingImagesError } = await supabase
     .from("post_images")
-    .select("image_url")
+    .select("id, image_url")
     .eq("post_id", postId);
 
   if (existingImagesError) {
@@ -239,28 +239,60 @@ async function syncGalleryImagesForPost({
   }
 
   const existingImages = (existingImagesData ?? []) as PostImageRow[];
-  const existingUrls = new Set(existingImages.map((record) => record.image_url));
-  const nextUrls = new Set(galleryImages.map((image) => image.imageUrl));
+  const existingImagesById = new Map(existingImages.map((record) => [record.id, record]));
+  const submittedExistingIds = new Set(
+    galleryImages.flatMap((image) => (image.id ? [image.id] : [])),
+  );
+  const unknownImageId = [...submittedExistingIds].find((imageId) => !existingImagesById.has(imageId));
 
-  const removedUrls = [...existingUrls].filter((url) => !nextUrls.has(url));
-
-  const { error: deleteError } = await supabase.from("post_images").delete().eq("post_id", postId);
-
-  if (deleteError) {
+  if (unknownImageId) {
     return {
       ok: false as const,
-      message: deleteError.message || "Unable to update gallery images.",
+      message: "One of the gallery images no longer belongs to this post. Refresh the editor and try again.",
     };
   }
 
-  if (galleryImages.length > 0) {
+  const normalizedGalleryImages = galleryImages.map((image, index) => ({
+    ...image,
+    displayOrder: index,
+  }));
+  const existingImageUpdates = normalizedGalleryImages.filter(
+    (image): image is GalleryImagePayload & { id: string } => Boolean(image.id),
+  );
+
+  const updateResults = await Promise.all(
+    existingImageUpdates.map((image) =>
+      supabase
+        .from("post_images")
+        .update({
+          image_url: image.imageUrl,
+          alt_text: image.altText,
+          caption: image.caption || null,
+          display_order: image.displayOrder,
+        } as never)
+        .eq("id", image.id)
+        .eq("post_id", postId),
+    ),
+  );
+  const failedUpdate = updateResults.find((result) => result.error);
+
+  if (failedUpdate?.error) {
+    return {
+      ok: false as const,
+      message: failedUpdate.error.message || "Unable to update gallery images.",
+    };
+  }
+
+  const newImages = normalizedGalleryImages.filter((image) => !image.id);
+
+  if (newImages.length > 0) {
     const { error: insertError } = await supabase.from("post_images").insert(
-      galleryImages.map((image, index) => ({
+      newImages.map((image) => ({
         post_id: postId,
         image_url: image.imageUrl,
         alt_text: image.altText,
         caption: image.caption || null,
-        display_order: index,
+        display_order: image.displayOrder,
       })) as never,
     );
 
@@ -272,7 +304,29 @@ async function syncGalleryImagesForPost({
     }
   }
 
-  await Promise.all(removedUrls.map((url) => removeStorageObjectIfSafeToDelete(supabase, url)));
+  const removedImages = existingImages.filter((image) => !submittedExistingIds.has(image.id));
+
+  if (removedImages.length > 0) {
+    const { error: deleteError } = await supabase
+      .from("post_images")
+      .delete()
+      .eq("post_id", postId)
+      .in(
+        "id",
+        removedImages.map((image) => image.id),
+      );
+
+    if (deleteError) {
+      return {
+        ok: false as const,
+        message: deleteError.message || "Unable to remove old gallery images.",
+      };
+    }
+  }
+
+  await Promise.all(
+    removedImages.map((image) => removeStorageObjectIfSafeToDelete(supabase, image.image_url)),
+  );
 
   return {
     ok: true as const,
