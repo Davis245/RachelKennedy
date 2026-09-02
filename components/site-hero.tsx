@@ -1,8 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
+import Image from "next/image";
 import Link from "next/link";
 import { ScrollIndicator } from "@/components/scroll-indicator";
 import { ContentContainer } from "@/components/ui/content-container";
 import { ImageFrame } from "@/components/ui/image-frame";
+import { homePageFixture } from "@/lib/homepage-fixture";
 import { formatJourneyPlace, getPublishedJourneys } from "@/lib/posts/public";
 
 const heroRotations = ["left", "right", "none"] as const;
@@ -10,10 +12,8 @@ const heroRotations = ["left", "right", "none"] as const;
 export async function SiteHero() {
   const publishedJourneys = await getPublishedJourneys();
   const [featuredJourney, ...recentJourneys] = publishedJourneys;
-  const firstHeroPhoto = featuredJourney?.coverImageUrl ?? recentJourneys[0]?.coverImageUrl ?? null;
-  const secondHeroPhoto = recentJourneys[0]?.coverImageUrl ?? featuredJourney?.coverImageUrl ?? null;
-  const firstHeroPhotoAlt = featuredJourney?.coverImageAlt ?? "Featured journey cover image";
-  const secondHeroPhotoAlt = recentJourneys[0]?.coverImageAlt ?? featuredJourney?.coverImageAlt ?? "Recent journey cover image";
+  const firstHeroPhoto = homePageFixture.heroPhotos[0];
+  const secondHeroPhoto = homePageFixture.heroPhotos[1];
 
   return (
     <main className="overflow-x-clip">
@@ -34,15 +34,14 @@ export async function SiteHero() {
               rotation="left"
               className="relative z-10 w-full max-w-[13.5rem] justify-self-start bg-[var(--color-bg)] p-1 shadow-[var(--shadow-frame)] sm:max-w-[14.5rem] lg:-ml-9 lg:w-[min(16.5vw,15.5rem)] lg:max-w-none lg:origin-center lg:scale-[1.25]"
             >
-              {firstHeroPhoto ? (
-                <img
-                  src={firstHeroPhoto}
-                  alt={firstHeroPhotoAlt}
-                  className="h-auto w-full"
-                />
-              ) : (
-                <div className="aspect-[4/5] w-full bg-[var(--color-accent-blue-soft)]" aria-hidden="true" />
-              )}
+              <Image
+                src={firstHeroPhoto.src}
+                alt={firstHeroPhoto.alt}
+                width={firstHeroPhoto.width}
+                height={firstHeroPhoto.height}
+                sizes="(max-width: 639px) 44vw, (max-width: 1023px) 30vw, 16.5vw"
+                className="h-auto w-full"
+              />
             </ImageFrame>
             <span className="relative z-30 inline-block origin-center scale-y-[1.18] text-[var(--color-accent-coral)] lg:-ml-3 lg:scale-y-[1.28]">
               Kennedy
@@ -51,15 +50,14 @@ export async function SiteHero() {
               rotation="right"
               className="relative z-10 w-full max-w-[13.5rem] justify-self-start bg-[var(--color-bg)] p-1 shadow-[var(--shadow-frame)] sm:max-w-[14.5rem] lg:-ml-9 lg:w-[min(16.5vw,15.5rem)] lg:max-w-none lg:origin-right lg:scale-[1.25]"
             >
-              {secondHeroPhoto ? (
-                <img
-                  src={secondHeroPhoto}
-                  alt={secondHeroPhotoAlt}
-                  className="h-auto w-full"
-                />
-              ) : (
-                <div className="aspect-[4/5] w-full bg-[var(--color-accent-coral-soft)]" aria-hidden="true" />
-              )}
+              <Image
+                src={secondHeroPhoto.src}
+                alt={secondHeroPhoto.alt}
+                width={secondHeroPhoto.width}
+                height={secondHeroPhoto.height}
+                sizes="(max-width: 639px) 44vw, (max-width: 1023px) 30vw, 16.5vw"
+                className="h-auto w-full"
+              />
             </ImageFrame>
           </h1>
         </div>
