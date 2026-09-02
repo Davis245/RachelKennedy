@@ -273,10 +273,12 @@ export async function savePostAction(
   };
 
   if (!postId) {
-    const { data, error } = await (adminContext.supabase.from("posts") as any)
-      .insert(postUpdate)
+    const { data, error } = await adminContext.supabase
+      .from("posts")
+      .insert(postUpdate as never)
       .select("id, slug, status")
       .single();
+    const createdPost = data as Pick<Database["public"]["Tables"]["posts"]["Row"], "id" | "slug" | "status"> | null;
 
     if (error) {
       return {
@@ -289,27 +291,39 @@ export async function savePostAction(
       };
     }
 
-    revalidateRoutes([data.slug]);
+    if (!createdPost) {
+      return {
+        status: "error",
+        message: "Unable to create the post.",
+        fieldErrors: {},
+      };
+    }
+
+    revalidateRoutes([createdPost.slug]);
 
     return {
       status: "success",
       message: status === "published" ? "Post published." : "Draft saved.",
       fieldErrors: {},
-      postId: data.id,
-      postStatus: data.status,
+      postId: createdPost.id,
+      postStatus: createdPost.status,
     };
   }
 
-  const { data: existingPost } = await (adminContext.supabase.from("posts") as any)
+  const { data: existingPostData } = await adminContext.supabase
+    .from("posts")
     .select("slug")
     .eq("id", postId)
     .maybeSingle();
+  const existingPost = existingPostData as Pick<Database["public"]["Tables"]["posts"]["Row"], "slug"> | null;
 
-  const { data: updatedPost, error: updateError } = await (adminContext.supabase.from("posts") as any)
-    .update(postUpdate)
+  const { data: updatedPostData, error: updateError } = await adminContext.supabase
+    .from("posts")
+    .update(postUpdate as never)
     .eq("id", postId)
     .select("id, slug, status")
     .single();
+  const updatedPost = updatedPostData as Pick<Database["public"]["Tables"]["posts"]["Row"], "id" | "slug" | "status"> | null;
 
   if (updateError) {
     return {
@@ -319,6 +333,15 @@ export async function savePostAction(
           ? "That slug is already in use. Choose a different slug."
           : updateError.message || "Unable to update the post.",
       fieldErrors: updateError.code === "23505" ? { slug: "This slug is already used by another post." } : {},
+      postId,
+    };
+  }
+
+  if (!updatedPost) {
+    return {
+      status: "error",
+      message: "Unable to update the post.",
+      fieldErrors: {},
       postId,
     };
   }
@@ -367,10 +390,12 @@ export async function deletePostAction(
     };
   }
 
-  const { data: postRecord } = await (adminContext.supabase.from("posts") as any)
+  const { data: postRecordData } = await adminContext.supabase
+    .from("posts")
     .select("slug")
     .eq("id", parsedPostId.data)
     .maybeSingle();
+  const postRecord = postRecordData as Pick<Database["public"]["Tables"]["posts"]["Row"], "slug"> | null;
 
   const { error } = await adminContext.supabase.from("posts").delete().eq("id", parsedPostId.data);
 
