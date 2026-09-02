@@ -65,6 +65,17 @@ Each post will include:
 - Publication status
 - Created, updated, and published timestamps
 
+Rich-text post content is stored as Tiptap/ProseMirror JSON with a root object shaped like:
+
+```json
+{
+  "type": "doc",
+  "content": []
+}
+```
+
+When rendered in the UI, rich-text output must be sanitized before display.
+
 ### Post images
 
 Gallery images will include a post reference, image URL, alt text, caption, and display order.

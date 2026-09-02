@@ -31,6 +31,12 @@ export default async function AdminDashboardPage() {
         <p className="text-[var(--color-muted)]">
           Review draft and published travel stories before opening the editor.
         </p>
+        <Link
+          href="/admin/posts/new"
+          className="inline-flex min-h-11 items-center rounded-[var(--radius-pill)] bg-[var(--color-ink)] px-4 py-2 text-sm font-semibold uppercase tracking-[0.18em] text-[var(--color-bg)]"
+        >
+          New post
+        </Link>
       </div>
 
       {error ? (
