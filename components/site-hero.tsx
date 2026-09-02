@@ -17,7 +17,7 @@ export function SiteHero() {
         className="relative flex min-h-[calc(100svh-6.5rem)] items-center overflow-x-clip px-4 pb-16 sm:px-6 lg:px-10 xl:px-14"
         aria-labelledby="homepage-main-heading"
       >
-        <div className="relative mx-auto w-full max-w-[120rem] px-2 sm:px-4 lg:px-[4.5vw]">
+        <div className="relative mx-auto w-full max-w-[120rem] px-2 sm:px-4 lg:px-[6.5vw]">
           <h1
             id="homepage-main-heading"
             aria-label="Rachel Kennedy"
@@ -28,7 +28,7 @@ export function SiteHero() {
             </span>
             <ImageFrame
               rotation="left"
-              className="relative z-10 w-full max-w-[13.5rem] justify-self-start bg-[var(--color-bg)] p-1 shadow-[var(--shadow-frame)] sm:max-w-[14.5rem] lg:-ml-7 lg:w-[min(16.5vw,15.5rem)] lg:max-w-none"
+              className="relative z-10 w-full max-w-[13.5rem] justify-self-start bg-[var(--color-bg)] p-1 shadow-[var(--shadow-frame)] sm:max-w-[14.5rem] lg:-ml-9 lg:w-[min(16.5vw,15.5rem)] lg:max-w-none lg:origin-center lg:scale-[1.5]"
             >
               <Image
                 src={firstHeroPhoto.src}
@@ -44,7 +44,7 @@ export function SiteHero() {
             </span>
             <ImageFrame
               rotation="right"
-              className="relative z-10 w-full max-w-[13.5rem] justify-self-start bg-[var(--color-bg)] p-1 shadow-[var(--shadow-frame)] sm:max-w-[14.5rem] lg:-ml-7 lg:w-[min(16.5vw,15.5rem)] lg:max-w-none"
+              className="relative z-10 w-full max-w-[13.5rem] justify-self-start bg-[var(--color-bg)] p-1 shadow-[var(--shadow-frame)] sm:max-w-[14.5rem] lg:-ml-9 lg:w-[min(16.5vw,15.5rem)] lg:max-w-none lg:origin-right lg:scale-[1.5]"
             >
               <Image
                 src={secondHeroPhoto.src}
