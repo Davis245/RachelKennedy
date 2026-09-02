@@ -190,6 +190,15 @@ export type Database = {
       };
     };
     Views: {
+      approved_comments: {
+        Row: {
+          id: string;
+          post_id: string;
+          display_name: string;
+          comment_text: string;
+          created_at: string;
+        };
+      };
       post_like_totals: {
         Row: {
           post_id: string | null;
