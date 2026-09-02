@@ -21,7 +21,7 @@ export function SiteHero() {
           <h1
             id="homepage-main-heading"
             aria-label="Rachel Kennedy"
-            className="hero-title relative z-20 grid w-full grid-cols-2 items-center gap-x-4 gap-y-4 text-[clamp(2.6rem,12vw,6.4rem)] leading-[0.84] sm:text-[clamp(3.4rem,10vw,8rem)] lg:grid-cols-[auto_minmax(8rem,16.5vw)_auto_minmax(8rem,16.5vw)] lg:justify-between lg:gap-x-0 lg:text-[clamp(4.6rem,7.9vw,9rem)]"
+            className="hero-title relative z-20 grid w-full grid-cols-2 items-center gap-x-4 gap-y-4 text-[clamp(3rem,13.5vw,7.2rem)] leading-[0.84] sm:text-[clamp(3.8rem,11.5vw,9.2rem)] lg:grid-cols-[auto_minmax(8rem,16.5vw)_auto_minmax(8rem,16.5vw)] lg:justify-between lg:gap-x-0 lg:text-[clamp(5.2rem,9.2vw,11.5rem)]"
           >
             <span className="relative z-30 inline-block origin-center scale-y-[1.18] text-[var(--color-ink)] lg:scale-y-[1.28]">
               Rachel
