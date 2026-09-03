@@ -11,7 +11,7 @@ const heroRotations = ["left", "right", "none"] as const;
 
 export async function SiteHero() {
   const publishedTrips = await getPublishedTrips();
-  const [mostRecentTrip, ...recentTrips] = publishedTrips;
+  const mostRecentTrip = publishedTrips[0];
   const firstHeroPhoto = homePageFixture.heroPhotos[0];
   const secondHeroPhoto = homePageFixture.heroPhotos[1];
 
@@ -69,17 +69,9 @@ export async function SiteHero() {
         {mostRecentTrip ? (
           <>
             <section aria-labelledby="most-recent-heading" className="space-y-5">
-              <div className="flex items-center justify-between gap-4">
-                <h2 id="most-recent-heading" className="text-3xl uppercase sm:text-4xl">
-                  Most Recent
-                </h2>
-                <Link
-                  href="/trips"
-                  className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--color-accent-blue)] motion-safe:hover:translate-x-0.5"
-                >
-                  View all trips
-                </Link>
-              </div>
+              <h2 id="most-recent-heading" className="text-3xl uppercase sm:text-4xl">
+                Most Recent
+              </h2>
 
               <article className="grid gap-6 rounded-[var(--radius-frame)] border border-[var(--color-border)] bg-white p-4 sm:p-6 lg:grid-cols-[0.9fr_1.1fr]">
                 {mostRecentTrip.coverImageUrl ? (
@@ -111,13 +103,17 @@ export async function SiteHero() {
               </article>
             </section>
 
-            {recentTrips.length > 0 ? (
-              <section aria-labelledby="recent-trips-heading" className="space-y-5">
-                <h2 id="recent-trips-heading" className="text-3xl uppercase sm:text-4xl">
-                  Recent trips
+            {publishedTrips.length > 0 ? (
+              <section
+                id="all-trips"
+                aria-labelledby="all-trips-heading"
+                className="scroll-mt-28 space-y-5"
+              >
+                <h2 id="all-trips-heading" className="text-3xl uppercase sm:text-4xl">
+                  All Trips
                 </h2>
                 <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-                  {recentTrips.slice(0, 3).map((trip, index) => (
+                  {publishedTrips.map((trip, index) => (
                     <article
                       key={trip.slug}
                       className="space-y-4 rounded-[var(--radius-frame)] border border-[var(--color-border)] bg-white p-4"

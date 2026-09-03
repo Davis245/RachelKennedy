@@ -10,10 +10,10 @@ export default function TripNotFound() {
           <h1 className="text-3xl uppercase sm:text-4xl">Trip not found</h1>
           <p className="text-[var(--color-muted)]">This published travel story is not available.</p>
           <Link
-            href="/trips"
+            href="/#all-trips"
             className="inline-flex min-h-11 items-center text-sm font-semibold uppercase tracking-[0.18em] text-[var(--color-accent-blue)]"
           >
-            Back to trips
+            Back to all trips
           </Link>
         </section>
       </ContentContainer>

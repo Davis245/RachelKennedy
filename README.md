@@ -27,8 +27,7 @@ The design will take inspiration from the reference without copying its branding
 ### Public website
 
 - Responsive editorial homepage
-- Most recent trip and recent travel posts
-- Browse posts by location
+- Most recent trip and an all-trips grid on the homepage
 - Individual travel-story pages
 - Photo galleries
 - Location and travel-date information

@@ -170,7 +170,6 @@ function formatFieldErrors(error: z.ZodError<z.infer<typeof postSchema>>): Field
 
 function revalidateRoutes(slugs: string[]) {
   revalidatePath("/");
-  revalidatePath("/trips");
   revalidatePath("/admin");
 
   for (const slug of slugs) {

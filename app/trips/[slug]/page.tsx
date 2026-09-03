@@ -93,10 +93,10 @@ export default async function TripStoryPage({
       <ContentContainer className="space-y-8">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
         <Link
-          href="/trips"
+          href="/#all-trips"
           className="inline-flex min-h-11 items-center text-sm font-semibold uppercase tracking-[0.18em] text-[var(--color-accent-blue)]"
         >
-          ← Back to trips
+          ← Back to all trips
         </Link>
 
         <article className="space-y-8">

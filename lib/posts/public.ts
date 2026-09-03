@@ -53,11 +53,6 @@ export type TripStory = TripPreview & {
   galleryImages: TripGalleryImage[];
 };
 
-type TripFilters = {
-  countries: string[];
-  locations: string[];
-};
-
 const demoPostDetails: Record<
   string,
   {
@@ -243,26 +238,6 @@ export function formatTravelDates(startDate: string | null, endDate: string | nu
 
 export function formatTripPlace(location: string | null, country: string | null) {
   return [location, country].filter(Boolean).join(", ");
-}
-
-export function getTripFilters(posts: TripPreview[]): TripFilters {
-  const countries = new Set<string>();
-  const locations = new Set<string>();
-
-  for (const post of posts) {
-    if (post.country) {
-      countries.add(post.country);
-    }
-
-    if (post.location) {
-      locations.add(post.location);
-    }
-  }
-
-  return {
-    countries: Array.from(countries).sort((left, right) => left.localeCompare(right)),
-    locations: Array.from(locations).sort((left, right) => left.localeCompare(right)),
-  };
 }
 
 export async function getPublishedTrips(): Promise<TripPreview[]> {
