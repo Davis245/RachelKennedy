@@ -3,7 +3,12 @@ import "server-only";
 import { createClient } from "@supabase/supabase-js";
 
 import { homePageFixture } from "@/lib/homepage-fixture";
-import { EMPTY_RICH_TEXT_DOCUMENT, isRichTextDocument, renderRichTextDocumentToSafeHtml } from "@/lib/rich-text";
+import {
+  EMPTY_RICH_TEXT_DOCUMENT,
+  isRichTextDocument,
+  renderRichTextDocumentToSafeHtml,
+  sanitizeRichTextHtml,
+} from "@/lib/rich-text";
 import { getPublicSupabaseEnv, hasPublicSupabaseEnv } from "@/lib/supabase/env";
 import type { Database } from "@/types/supabase";
 
@@ -133,52 +138,86 @@ const demoPostDetails: Record<
   },
 };
 
-const demoTripStories: TripStory[] = shouldUseDemoPosts()
-  ? [homePageFixture.mostRecentTrip, ...homePageFixture.recentTrips]
-      .map((trip) => {
-        const details = demoPostDetails[trip.slug];
-        if (!details) {
-          throw new Error(`Missing demo post details for slug "${trip.slug}".`);
-        }
-
-        const placeParts = trip.location.split(", ");
-        const country = placeParts.length > 1 ? (placeParts.pop() ?? null) : null;
-
-        return {
-          slug: trip.slug,
-          title: trip.title,
-          excerpt: trip.excerpt,
-          publishedAt: details.publishedAt,
-          location: placeParts.join(", ") || null,
-          country,
-          travelDates: trip.travelDates,
-          coverImageUrl: trip.coverImage.src,
-          coverImageAlt: trip.coverImage.alt,
-          contentHtml: details.contentHtml,
-          galleryImages: details.galleryImages,
-        };
-      })
-      .sort((left, right) => Date.parse(right.publishedAt ?? "") - Date.parse(left.publishedAt ?? ""))
-  : [];
-
-const demoTripPreviews: TripPreview[] = demoTripStories.map((trip) => ({
-  slug: trip.slug,
-  title: trip.title,
-  excerpt: trip.excerpt,
-  publishedAt: trip.publishedAt,
-  location: trip.location,
-  country: trip.country,
-  travelDates: trip.travelDates,
-  coverImageUrl: trip.coverImageUrl,
-  coverImageAlt: trip.coverImageAlt,
-}));
+let demoTripStories: TripStory[] | null = null;
 
 function shouldUseDemoPosts() {
   return process.env.NODE_ENV === "development" || process.env.VERCEL_ENV === "preview";
 }
 
 function getDemoTripBySlug(slug: string) {
-  return demoTripStories.find((trip) => trip.slug === slug) ?? null;
+  return getDemoTripStories().find((trip) => trip.slug === slug) ?? null;
+}
+
+function splitTripLocation(location: string) {
+  const parts = location
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  if (parts.length <= 1) {
+    return {
+      location: location.trim() || null,
+      country: null,
+    };
+  }
+
+  return {
+    location: parts.slice(0, -1).join(", ") || null,
+    country: parts.at(-1) ?? null,
+  };
+}
+
+function buildDemoTripStories() {
+  return [homePageFixture.mostRecentTrip, ...homePageFixture.recentTrips]
+    .map((trip) => {
+      const details = demoPostDetails[trip.slug];
+      if (!details) {
+        throw new Error(`Missing demo post details for slug "${trip.slug}".`);
+      }
+
+      const place = splitTripLocation(trip.location);
+
+      return {
+        slug: trip.slug,
+        title: trip.title,
+        excerpt: trip.excerpt,
+        publishedAt: details.publishedAt,
+        location: place.location,
+        country: place.country,
+        travelDates: trip.travelDates,
+        coverImageUrl: trip.coverImage.src,
+        coverImageAlt: trip.coverImage.alt,
+        contentHtml: sanitizeRichTextHtml(details.contentHtml),
+        galleryImages: details.galleryImages,
+      };
+    })
+    .sort((left, right) => Date.parse(right.publishedAt ?? "") - Date.parse(left.publishedAt ?? ""));
+}
+
+function getDemoTripStories() {
+  if (!shouldUseDemoPosts()) {
+    return [];
+  }
+
+  if (!demoTripStories) {
+    demoTripStories = buildDemoTripStories();
+  }
+
+  return demoTripStories;
+}
+
+function getDemoTripPreviews(): TripPreview[] {
+  return getDemoTripStories().map((trip) => ({
+    slug: trip.slug,
+    title: trip.title,
+    excerpt: trip.excerpt,
+    publishedAt: trip.publishedAt,
+    location: trip.location,
+    country: trip.country,
+    travelDates: trip.travelDates,
+    coverImageUrl: trip.coverImageUrl,
+    coverImageAlt: trip.coverImageAlt,
+  }));
 }
 
 function createPublicSupabaseClient() {
@@ -249,7 +288,7 @@ export function formatTripPlace(location: string | null, country: string | null)
 export async function getPublishedTrips(): Promise<TripPreview[]> {
   const supabase = createPublicSupabaseClient();
   if (!supabase) {
-    return shouldUseDemoPosts() ? demoTripPreviews : [];
+    return shouldUseDemoPosts() ? getDemoTripPreviews() : [];
   }
 
   const { data, error } = await supabase
@@ -265,7 +304,7 @@ export async function getPublishedTrips(): Promise<TripPreview[]> {
   }
 
   const publishedTrips = ((data ?? []) as PublishedPostRow[]).map(mapTripPreview);
-  return publishedTrips.length === 0 && shouldUseDemoPosts() ? demoTripPreviews : publishedTrips;
+  return publishedTrips.length === 0 && shouldUseDemoPosts() ? getDemoTripPreviews() : publishedTrips;
 }
 
 export async function getPublishedTripBySlug(slug: string): Promise<TripStory | null> {
@@ -289,7 +328,19 @@ export async function getPublishedTripBySlug(slug: string): Promise<TripStory | 
   }
 
   if (!post) {
-    return shouldUseDemoPosts() ? getDemoTripBySlug(slug) : null;
+    if (!shouldUseDemoPosts()) {
+      return null;
+    }
+
+    const { count, error: countError } = await supabase
+      .from("posts")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "published");
+    if (countError) {
+      throw new Error(countError.message || "Unable to check published trips.");
+    }
+
+    return (count ?? 0) === 0 ? getDemoTripBySlug(slug) : null;
   }
 
   const { data: imageData, error: imageError } = await supabase
