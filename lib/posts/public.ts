@@ -340,7 +340,7 @@ export async function getPublishedTripBySlug(slug: string): Promise<TripStory | 
       throw new Error(countError.message || "Unable to check published trips.");
     }
 
-    return (count ?? 0) === 0 ? getDemoTripBySlug(slug) : null;
+    return count === 0 ? getDemoTripBySlug(slug) : null;
   }
 
   const { data: imageData, error: imageError } = await supabase
