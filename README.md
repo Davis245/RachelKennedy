@@ -31,7 +31,7 @@ The design will take inspiration from the reference without copying its branding
 - Individual travel-story pages
 - Photo galleries
 - Location and travel-date information
-- About page
+- About section on the homepage
 - SEO metadata, canonical URLs, sitemap, robots, and social sharing previews
 
 ### Admin CMS

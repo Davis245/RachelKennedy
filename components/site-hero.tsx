@@ -2,6 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ScrollIndicator } from "@/components/scroll-indicator";
+import { AccentPill } from "@/components/ui/accent-pill";
 import { ContentContainer } from "@/components/ui/content-container";
 import { ImageFrame } from "@/components/ui/image-frame";
 import { homePageFixture } from "@/lib/homepage-fixture";
@@ -161,6 +162,26 @@ export async function SiteHero() {
             </p>
           </section>
         )}
+
+        <section
+          id="about"
+          aria-labelledby="about-heading"
+          className="scroll-mt-28 space-y-6 border-t border-[var(--color-border)] pt-10 sm:pt-12"
+        >
+          <AccentPill tone="coral">About</AccentPill>
+          <div className="max-w-3xl space-y-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-muted)]">
+              Rachel Kennedy
+            </p>
+            <h2 id="about-heading" className="text-4xl uppercase leading-[0.92] sm:text-6xl">
+              Editorial travel storytelling
+            </h2>
+            <p className="text-base leading-7 text-[var(--color-muted)]">
+              This blog blends destination reporting with personal perspective, photography, and reflections from
+              each trip.
+            </p>
+          </div>
+        </section>
       </ContentContainer>
     </main>
   );
