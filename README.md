@@ -141,6 +141,8 @@ If you later add server-only workflows (cron jobs, admin scripts, or webhooks), 
 
 ## Local setup
 
+When there are no published Supabase posts, local development and Vercel preview deployments show sample trips so the public layouts can be reviewed. Production never uses this sample content.
+
 1. Install dependencies:
 
    ```bash
