@@ -6,16 +6,16 @@ import { AccentPill } from "@/components/ui/accent-pill";
 import { ContentContainer } from "@/components/ui/content-container";
 import { ImageFrame } from "@/components/ui/image-frame";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { formatJourneyPlace, getJourneyFilters, getPublishedJourneys } from "@/lib/posts/public";
+import { formatTripPlace, getTripFilters, getPublishedTrips } from "@/lib/posts/public";
 import { getCanonicalUrl } from "@/lib/site";
 
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: "Journeys",
+  title: "Trips",
   description: "Browse Rachel Kennedy’s published travel stories by destination.",
   alternates: {
-    canonical: getCanonicalUrl("/journeys"),
+    canonical: getCanonicalUrl("/trips"),
   },
 };
 
@@ -35,24 +35,24 @@ function createFilterHref(filters: { country?: string; location?: string }) {
   }
 
   const query = searchParams.toString();
-  return query ? `/journeys?${query}` : "/journeys";
+  return query ? `/trips?${query}` : "/trips";
 }
 
-export default async function JourneysPage({
+export default async function TripsPage({
   searchParams,
 }: {
   searchParams: Promise<{ country?: string | string[]; location?: string | string[] }>;
 }) {
-  const [resolvedSearchParams, publishedJourneys] = await Promise.all([searchParams, getPublishedJourneys()]);
+  const [resolvedSearchParams, publishedTrips] = await Promise.all([searchParams, getPublishedTrips()]);
   const country = getSingleSearchParam(resolvedSearchParams.country);
   const location = getSingleSearchParam(resolvedSearchParams.location);
-  const filters = getJourneyFilters(publishedJourneys);
-  const filteredJourneys = publishedJourneys.filter((journey) => {
-    if (country && journey.country !== country) {
+  const filters = getTripFilters(publishedTrips);
+  const filteredTrips = publishedTrips.filter((trip) => {
+    if (country && trip.country !== country) {
       return false;
     }
 
-    if (location && journey.location !== location) {
+    if (location && trip.location !== location) {
       return false;
     }
 
@@ -63,18 +63,18 @@ export default async function JourneysPage({
   return (
     <main className="py-12 sm:py-16">
       <ContentContainer className="space-y-10">
-        <AccentPill tone="blue">Journeys</AccentPill>
+        <AccentPill tone="blue">Trips</AccentPill>
         <SectionHeading eyebrow="Stories by destination" title="Published travel stories" />
         <p className="max-w-2xl text-[var(--color-muted)]">
-          Browse Rachel’s published travel writing by destination, then open each journey for the full story and
+          Browse Rachel’s published travel writing by destination, then open each trip for the full story and
           gallery.
         </p>
 
-        {publishedJourneys.length > 0 ? (
-          <section className="space-y-6" aria-labelledby="journey-filters-heading">
+        {publishedTrips.length > 0 ? (
+          <section className="space-y-6" aria-labelledby="trip-filters-heading">
             <div className="space-y-3">
-              <h2 id="journey-filters-heading" className="text-2xl uppercase">
-                Filter journeys
+              <h2 id="trip-filters-heading" className="text-2xl uppercase">
+                Filter trips
               </h2>
               <div className="space-y-4">
                 {filters.countries.length > 0 ? (
@@ -146,7 +146,7 @@ export default async function JourneysPage({
 
               {hasActiveFilters ? (
                 <Link
-                  href="/journeys"
+                  href="/trips"
                   className="inline-flex min-h-11 items-center text-sm font-semibold uppercase tracking-[0.18em] text-[var(--color-accent-blue)]"
                 >
                   Clear filters
@@ -156,33 +156,33 @@ export default async function JourneysPage({
           </section>
         ) : null}
 
-        {publishedJourneys.length === 0 ? (
+        {publishedTrips.length === 0 ? (
           <section className="rounded-[var(--radius-frame)] border border-[var(--color-border)] bg-white p-6 shadow-[var(--shadow-frame)]">
-            <p className="text-sm font-semibold uppercase tracking-[0.18em]">No journeys published yet</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em]">No trips published yet</p>
             <p className="mt-2 max-w-2xl text-[var(--color-muted)]">
               Rachel’s first public travel story will appear here as soon as it is published.
             </p>
           </section>
-        ) : filteredJourneys.length === 0 ? (
+        ) : filteredTrips.length === 0 ? (
           <section className="rounded-[var(--radius-frame)] border border-[var(--color-border)] bg-white p-6 shadow-[var(--shadow-frame)]">
-            <p className="text-sm font-semibold uppercase tracking-[0.18em]">No journeys match these filters</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em]">No trips match these filters</p>
             <p className="mt-2 max-w-2xl text-[var(--color-muted)]">
               Try clearing one or both filters to browse all published destinations again.
             </p>
           </section>
         ) : (
-          <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-3" aria-label="Published journeys">
-            {filteredJourneys.map((journey) => (
+          <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-3" aria-label="Published trips">
+            {filteredTrips.map((trip) => (
               <article
-                key={journey.slug}
+                key={trip.slug}
                 className="space-y-4 rounded-[var(--radius-frame)] border border-[var(--color-border)] bg-white p-4 shadow-[var(--shadow-frame)]"
               >
-                {journey.coverImageUrl ? (
+                {trip.coverImageUrl ? (
                   <ImageFrame rotation="left" className="bg-[var(--color-bg)] p-1">
                     <div className="relative aspect-[4/3] w-full">
                       <Image
-                        src={journey.coverImageUrl}
-                        alt={journey.coverImageAlt}
+                        src={trip.coverImageUrl}
+                        alt={trip.coverImageAlt}
                         fill
                         sizes="(max-width: 767px) 100vw, (max-width: 1279px) 50vw, 33vw"
                         className="object-cover"
@@ -197,18 +197,18 @@ export default async function JourneysPage({
 
                 <div className="space-y-3">
                   <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-muted)]">
-                    {formatJourneyPlace(journey.location, journey.country) || "Location to be announced"}
+                    {formatTripPlace(trip.location, trip.country) || "Location to be announced"}
                   </p>
-                  {journey.travelDates ? (
-                    <p className="text-sm text-[var(--color-muted)]">{journey.travelDates}</p>
+                  {trip.travelDates ? (
+                    <p className="text-sm text-[var(--color-muted)]">{trip.travelDates}</p>
                   ) : null}
-                  <h2 className="text-2xl uppercase leading-[0.92]">{journey.title}</h2>
-                  <p className="text-sm text-[var(--color-muted)]">{journey.excerpt}</p>
+                  <h2 className="text-2xl uppercase leading-[0.92]">{trip.title}</h2>
+                  <p className="text-sm text-[var(--color-muted)]">{trip.excerpt}</p>
                   <Link
-                    href={`/journeys/${journey.slug}`}
+                    href={`/trips/${trip.slug}`}
                     className="inline-flex min-h-11 items-center text-sm font-semibold uppercase tracking-[0.18em] text-[var(--color-accent-blue)]"
                   >
-                    Read journey
+                    Read trip
                   </Link>
                 </div>
               </article>

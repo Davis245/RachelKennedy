@@ -45,7 +45,7 @@ const heroRidgePhoto = {
 export const homePageFixture: HomePageFixture = {
   heroPills: ["Travel stories & photographs", "Notes from places near and far"],
   heroPhotos: [heroCoastPhoto, heroRidgePhoto],
-  featuredJourney: {
+  mostRecentTrip: {
     slug: "coastal-trains-through-portugal",
     title: "Coastal Trains Through Portugal",
     location: "Lisbon, Cascais, and Porto, Portugal",
@@ -54,7 +54,7 @@ export const homePageFixture: HomePageFixture = {
       "A week of train windows, tiled stations, and Atlantic light—following small detours from Lisbon to Porto through seaside platforms and late-market dinners.",
     coverImage: lisbonImage,
   },
-  recentJourneys: [
+  recentTrips: [
     {
       slug: "quiet-mornings-in-kyoto",
       title: "Quiet Mornings in Kyoto",

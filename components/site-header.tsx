@@ -2,30 +2,51 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { ContentContainer } from "@/components/ui/content-container";
 
 const navItems = [
   { href: "/", label: "Home" },
-  { href: "/journeys", label: "Journeys" },
+  { href: "/trips", label: "Trips" },
   { href: "/about", label: "About" },
 ];
 
+function subscribeToScroll(onStoreChange: () => void) {
+  window.addEventListener("scroll", onStoreChange, { passive: true });
+  return () => window.removeEventListener("scroll", onStoreChange);
+}
+
+function getScrollSnapshot() {
+  return window.scrollY > 0;
+}
+
+function getServerScrollSnapshot() {
+  return false;
+}
+
+function subscribeToHydration() {
+  return () => undefined;
+}
+
+function getHydratedSnapshot() {
+  return true;
+}
+
+function getServerHydratedSnapshot() {
+  return false;
+}
+
 export function SiteHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [hasScrolled, setHasScrolled] = useState(false);
+  const hasScrolled = useSyncExternalStore(subscribeToScroll, getScrollSnapshot, getServerScrollSnapshot);
+  const isHydrated = useSyncExternalStore(
+    subscribeToHydration,
+    getHydratedSnapshot,
+    getServerHydratedSnapshot,
+  );
   const pathname = usePathname();
   const isHomePage = pathname === "/";
-  const isVisible = !isHomePage || hasScrolled;
-
-  useEffect(() => {
-    const updateScrollState = () => setHasScrolled(window.scrollY > 24);
-
-    updateScrollState();
-    window.addEventListener("scroll", updateScrollState, { passive: true });
-
-    return () => window.removeEventListener("scroll", updateScrollState);
-  }, [pathname]);
+  const isVisible = isHydrated && (!isHomePage || hasScrolled);
 
   return (
     <header

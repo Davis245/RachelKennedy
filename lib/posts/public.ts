@@ -27,7 +27,7 @@ type PublishedPostImageRow = Pick<
   "id" | "image_url" | "alt_text" | "caption" | "display_order"
 >;
 
-export type JourneyPreview = {
+export type TripPreview = {
   slug: string;
   title: string;
   excerpt: string;
@@ -39,7 +39,7 @@ export type JourneyPreview = {
   coverImageAlt: string;
 };
 
-export type JourneyGalleryImage = {
+export type TripGalleryImage = {
   id: string;
   imageUrl: string;
   altText: string;
@@ -47,12 +47,12 @@ export type JourneyGalleryImage = {
   displayOrder: number;
 };
 
-export type JourneyStory = JourneyPreview & {
+export type TripStory = TripPreview & {
   contentHtml: string;
-  galleryImages: JourneyGalleryImage[];
+  galleryImages: TripGalleryImage[];
 };
 
-type JourneyFilters = {
+type TripFilters = {
   countries: string[];
   locations: string[];
 };
@@ -84,11 +84,11 @@ function fallbackCoverImageAlt(title: string) {
   return `${title} cover image`;
 }
 
-function mapJourneyPreview(post: PublishedPostRow): JourneyPreview {
+function mapTripPreview(post: PublishedPostRow): TripPreview {
   return {
     slug: post.slug,
     title: post.title,
-    excerpt: post.excerpt?.trim() || "Rachel’s full story from this journey is coming soon.",
+    excerpt: post.excerpt?.trim() || "Rachel’s full story from this trip is coming soon.",
     publishedAt: post.published_at,
     location: post.location,
     country: post.country,
@@ -118,11 +118,11 @@ export function formatTravelDates(startDate: string | null, endDate: string | nu
   return null;
 }
 
-export function formatJourneyPlace(location: string | null, country: string | null) {
+export function formatTripPlace(location: string | null, country: string | null) {
   return [location, country].filter(Boolean).join(", ");
 }
 
-export function getJourneyFilters(posts: JourneyPreview[]): JourneyFilters {
+export function getTripFilters(posts: TripPreview[]): TripFilters {
   const countries = new Set<string>();
   const locations = new Set<string>();
 
@@ -142,7 +142,7 @@ export function getJourneyFilters(posts: JourneyPreview[]): JourneyFilters {
   };
 }
 
-export async function getPublishedJourneys() {
+export async function getPublishedTrips() {
   const supabase = createPublicSupabaseClient();
   if (!supabase) {
     return [];
@@ -157,13 +157,13 @@ export async function getPublishedJourneys() {
     .order("published_at", { ascending: false });
 
   if (error) {
-    throw new Error(error.message || "Unable to load published journeys.");
+    throw new Error(error.message || "Unable to load published trips.");
   }
 
-  return ((data ?? []) as PublishedPostRow[]).map(mapJourneyPreview);
+  return ((data ?? []) as PublishedPostRow[]).map(mapTripPreview);
 }
 
-export async function getPublishedJourneyBySlug(slug: string): Promise<JourneyStory | null> {
+export async function getPublishedTripBySlug(slug: string): Promise<TripStory | null> {
   const supabase = createPublicSupabaseClient();
   if (!supabase) {
     return null;
@@ -180,7 +180,7 @@ export async function getPublishedJourneyBySlug(slug: string): Promise<JourneySt
   const post = data as PublishedPostRow | null;
 
   if (error) {
-    throw new Error(error.message || "Unable to load this journey.");
+    throw new Error(error.message || "Unable to load this trip.");
   }
 
   if (!post) {
@@ -194,11 +194,11 @@ export async function getPublishedJourneyBySlug(slug: string): Promise<JourneySt
     .order("display_order", { ascending: true });
 
   if (imageError) {
-    throw new Error(imageError.message || "Unable to load journey images.");
+    throw new Error(imageError.message || "Unable to load trip images.");
   }
 
   return {
-    ...mapJourneyPreview(post),
+    ...mapTripPreview(post),
     contentHtml: renderRichTextDocumentToSafeHtml(
       isRichTextDocument(post.content) ? post.content : EMPTY_RICH_TEXT_DOCUMENT,
     ),

@@ -465,7 +465,7 @@ export function PostEditor({
               required
               className="min-h-11 w-full rounded-[var(--radius-frame)] border border-[var(--color-border)] bg-white px-4 py-3"
             />
-            <p className="text-sm text-[var(--color-muted)]">URL: /journeys/{slug || "your-post-slug"}</p>
+            <p className="text-sm text-[var(--color-muted)]">URL: /trips/{slug || "your-post-slug"}</p>
             <FieldError error={saveState.fieldErrors.slug} />
           </div>
 
