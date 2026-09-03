@@ -27,8 +27,7 @@ The design will take inspiration from the reference without copying its branding
 ### Public website
 
 - Responsive editorial homepage
-- Most recent trip and recent travel posts
-- Browse posts by location
+- Most recent trip and an all-trips grid on the homepage
 - Individual travel-story pages
 - Photo galleries
 - Location and travel-date information
@@ -140,6 +139,8 @@ If you later add server-only workflows (cron jobs, admin scripts, or webhooks), 
 4. Connect the custom domain in Vercel and ensure `NEXT_PUBLIC_SITE_URL` matches the final `https://` domain.
 
 ## Local setup
+
+When there are no published Supabase posts, local development and Vercel preview deployments show sample trips so the public layouts can be reviewed. Production never uses this sample content.
 
 1. Install dependencies:
 

@@ -8,6 +8,15 @@ export const EMPTY_RICH_TEXT_DOCUMENT: JSONContent = {
   content: [],
 };
 
+const RICH_TEXT_SANITIZE_OPTIONS: sanitizeHtml.IOptions = {
+  allowedTags: [...sanitizeHtml.defaults.allowedTags, "h1", "h2", "h3", "h4", "h5", "h6", "img"],
+  allowedAttributes: {
+    a: ["href", "name", "target", "rel"],
+    img: ["src", "alt"],
+  },
+  allowedSchemes: ["http", "https", "mailto"],
+};
+
 export function isRichTextDocument(value: unknown): value is JSONContent {
   if (!value || typeof value !== "object") {
     return false;
@@ -33,21 +42,9 @@ export function parseRichTextDocument(value: FormDataEntryValue | null): JSONCon
 export function renderRichTextDocumentToSafeHtml(document: JSONContent) {
   const html = generateHTML(document, [StarterKit]);
 
-  return sanitizeHtml(html, {
-    allowedTags: [
-      ...sanitizeHtml.defaults.allowedTags,
-      "h1",
-      "h2",
-      "h3",
-      "h4",
-      "h5",
-      "h6",
-      "img",
-    ],
-    allowedAttributes: {
-      a: ["href", "name", "target", "rel"],
-      img: ["src", "alt"],
-    },
-    allowedSchemes: ["http", "https", "mailto"],
-  });
+  return sanitizeRichTextHtml(html);
+}
+
+export function sanitizeRichTextHtml(html: string) {
+  return sanitizeHtml(html, RICH_TEXT_SANITIZE_OPTIONS);
 }

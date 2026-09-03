@@ -7,7 +7,7 @@ import { ContentContainer } from "@/components/ui/content-container";
 
 const navItems = [
   { href: "/", label: "Home" },
-  { href: "/trips", label: "Trips" },
+  { href: "/#all-trips", label: "Trips" },
   { href: "/about", label: "About" },
 ];
 
