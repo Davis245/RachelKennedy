@@ -140,10 +140,6 @@ const demoPostDetails: Record<
 
 let demoTripStories: TripStory[] | null = null;
 
-function shouldUseDemoPosts() {
-  return process.env.NODE_ENV === "development" || process.env.VERCEL_ENV === "preview";
-}
-
 function getDemoTripBySlug(slug: string) {
   return getDemoTripStories().find((trip) => trip.slug === slug) ?? null;
 }
@@ -195,10 +191,6 @@ function buildDemoTripStories() {
 }
 
 function getDemoTripStories() {
-  if (!shouldUseDemoPosts()) {
-    return [];
-  }
-
   if (!demoTripStories) {
     demoTripStories = buildDemoTripStories();
   }
@@ -288,7 +280,7 @@ export function formatTripPlace(location: string | null, country: string | null)
 export async function getPublishedTrips(): Promise<TripPreview[]> {
   const supabase = createPublicSupabaseClient();
   if (!supabase) {
-    return shouldUseDemoPosts() ? getDemoTripPreviews() : [];
+    return getDemoTripPreviews();
   }
 
   const { data, error } = await supabase
@@ -304,13 +296,13 @@ export async function getPublishedTrips(): Promise<TripPreview[]> {
   }
 
   const publishedTrips = ((data ?? []) as PublishedPostRow[]).map(mapTripPreview);
-  return publishedTrips.length === 0 && shouldUseDemoPosts() ? getDemoTripPreviews() : publishedTrips;
+  return publishedTrips.length === 0 ? getDemoTripPreviews() : publishedTrips;
 }
 
 export async function getPublishedTripBySlug(slug: string): Promise<TripStory | null> {
   const supabase = createPublicSupabaseClient();
   if (!supabase) {
-    return shouldUseDemoPosts() ? getDemoTripBySlug(slug) : null;
+    return getDemoTripBySlug(slug);
   }
 
   const { data, error } = await supabase
@@ -328,10 +320,6 @@ export async function getPublishedTripBySlug(slug: string): Promise<TripStory | 
   }
 
   if (!post) {
-    if (!shouldUseDemoPosts()) {
-      return null;
-    }
-
     const { count, error: countError } = await supabase
       .from("posts")
       .select("id", { count: "exact", head: true })

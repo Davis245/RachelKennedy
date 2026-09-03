@@ -140,7 +140,7 @@ If you later add server-only workflows (cron jobs, admin scripts, or webhooks), 
 
 ## Local setup
 
-When there are no published Supabase posts, local development and Vercel preview deployments show sample trips so the public layouts can be reviewed. Production never uses this sample content.
+When there are no published Supabase posts, local development, Vercel previews, and production show sample trips so the public layouts can be reviewed. The sample trips disappear automatically as soon as the first real trip is published.
 
 1. Install dependencies:
 
