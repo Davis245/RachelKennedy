@@ -27,7 +27,7 @@ The design will take inspiration from the reference without copying its branding
 ### Public website
 
 - Responsive editorial homepage
-- Featured journey and recent travel posts
+- Most recent trip and recent travel posts
 - Browse posts by location
 - Individual travel-story pages
 - Photo galleries
@@ -178,4 +178,4 @@ If you later add server-only workflows (cron jobs, admin scripts, or webhooks), 
 - [ ] `robots.txt` and `sitemap.xml` are reachable in production.
 - [ ] Custom domain is connected and `NEXT_PUBLIC_SITE_URL` matches it.
 - [ ] Draft posts are not publicly visible, and `/admin` is not indexed.
-- [ ] Final content and metadata review is complete for all published journeys.
+- [ ] Final content and metadata review is complete for all published trips.

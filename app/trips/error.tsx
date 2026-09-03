@@ -2,7 +2,7 @@
 
 import { ContentContainer } from "@/components/ui/content-container";
 
-export default function JourneysError({
+export default function TripsError({
   error,
   reset,
 }: {
@@ -13,7 +13,7 @@ export default function JourneysError({
     <main className="py-12 sm:py-16">
       <ContentContainer>
         <section className="space-y-4 rounded-[var(--radius-frame)] border border-[var(--color-accent-coral)] bg-[var(--color-accent-coral-soft)] p-6 shadow-[var(--shadow-frame)]">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em]">Unable to load journeys</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.18em]">Unable to load trips</p>
           <p className="text-sm">{error.message || "Please try again in a moment."}</p>
           <button
             type="button"

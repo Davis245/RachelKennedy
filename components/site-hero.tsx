@@ -5,13 +5,13 @@ import { ScrollIndicator } from "@/components/scroll-indicator";
 import { ContentContainer } from "@/components/ui/content-container";
 import { ImageFrame } from "@/components/ui/image-frame";
 import { homePageFixture } from "@/lib/homepage-fixture";
-import { formatJourneyPlace, getPublishedJourneys } from "@/lib/posts/public";
+import { formatTripPlace, getPublishedTrips } from "@/lib/posts/public";
 
 const heroRotations = ["left", "right", "none"] as const;
 
 export async function SiteHero() {
-  const publishedJourneys = await getPublishedJourneys();
-  const [featuredJourney, ...recentJourneys] = publishedJourneys;
+  const publishedTrips = await getPublishedTrips();
+  const [mostRecentTrip, ...recentTrips] = publishedTrips;
   const firstHeroPhoto = homePageFixture.heroPhotos[0];
   const secondHeroPhoto = homePageFixture.heroPhotos[1];
 
@@ -66,32 +66,27 @@ export async function SiteHero() {
       </section>
 
       <ContentContainer className="space-y-14 sm:space-y-16">
-        <p className="max-w-2xl text-base text-[var(--color-muted)] sm:text-lg">
-          Dispatches from train windows, mountain roads, and old city streets—travel stories and photographs from near
-          and far.
-        </p>
-
-        {featuredJourney ? (
+        {mostRecentTrip ? (
           <>
-            <section aria-labelledby="featured-journey-heading" className="space-y-5">
+            <section aria-labelledby="most-recent-heading" className="space-y-5">
               <div className="flex items-center justify-between gap-4">
-                <h2 id="featured-journey-heading" className="text-3xl uppercase sm:text-4xl">
-                  Featured journey
+                <h2 id="most-recent-heading" className="text-3xl uppercase sm:text-4xl">
+                  Most Recent
                 </h2>
                 <Link
-                  href="/journeys"
+                  href="/trips"
                   className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--color-accent-blue)] motion-safe:hover:translate-x-0.5"
                 >
-                  View all journeys
+                  View all trips
                 </Link>
               </div>
 
               <article className="grid gap-6 rounded-[var(--radius-frame)] border border-[var(--color-border)] bg-white p-4 sm:p-6 lg:grid-cols-[0.9fr_1.1fr]">
-                {featuredJourney.coverImageUrl ? (
+                {mostRecentTrip.coverImageUrl ? (
                   <ImageFrame rotation="left" className="motion-safe:transition-transform motion-safe:hover:-translate-y-1">
                     <img
-                      src={featuredJourney.coverImageUrl}
-                      alt={featuredJourney.coverImageAlt}
+                      src={mostRecentTrip.coverImageUrl}
+                      alt={mostRecentTrip.coverImageAlt}
                       className="h-auto w-full"
                     />
                   </ImageFrame>
@@ -101,38 +96,38 @@ export async function SiteHero() {
 
                 <div className="flex flex-col justify-center space-y-4">
                   <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-muted)]">
-                    {formatJourneyPlace(featuredJourney.location, featuredJourney.country) || "Destination to be announced"}
-                    {featuredJourney.travelDates ? ` · ${featuredJourney.travelDates}` : ""}
+                    {formatTripPlace(mostRecentTrip.location, mostRecentTrip.country) || "Destination to be announced"}
+                    {mostRecentTrip.travelDates ? ` · ${mostRecentTrip.travelDates}` : ""}
                   </p>
-                  <h3 className="text-3xl uppercase leading-[0.9] sm:text-4xl">{featuredJourney.title}</h3>
-                  <p className="text-[var(--color-muted)]">{featuredJourney.excerpt}</p>
+                  <h3 className="text-3xl uppercase leading-[0.9] sm:text-4xl">{mostRecentTrip.title}</h3>
+                  <p className="text-[var(--color-muted)]">{mostRecentTrip.excerpt}</p>
                   <Link
-                    href={`/journeys/${featuredJourney.slug}`}
+                    href={`/trips/${mostRecentTrip.slug}`}
                     className="w-fit text-sm font-semibold uppercase tracking-[0.18em] text-[var(--color-accent-blue)] motion-safe:hover:translate-x-0.5"
                   >
-                    Read journey notes
+                    Read trip notes
                   </Link>
                 </div>
               </article>
             </section>
 
-            {recentJourneys.length > 0 ? (
-              <section aria-labelledby="recent-journeys-heading" className="space-y-5">
-                <h2 id="recent-journeys-heading" className="text-3xl uppercase sm:text-4xl">
-                  Recent journeys
+            {recentTrips.length > 0 ? (
+              <section aria-labelledby="recent-trips-heading" className="space-y-5">
+                <h2 id="recent-trips-heading" className="text-3xl uppercase sm:text-4xl">
+                  Recent trips
                 </h2>
                 <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-                  {recentJourneys.slice(0, 3).map((journey, index) => (
+                  {recentTrips.slice(0, 3).map((trip, index) => (
                     <article
-                      key={journey.slug}
+                      key={trip.slug}
                       className="space-y-4 rounded-[var(--radius-frame)] border border-[var(--color-border)] bg-white p-4"
                     >
-                      {journey.coverImageUrl ? (
+                      {trip.coverImageUrl ? (
                         <ImageFrame
                           rotation={heroRotations[index]}
                           className="bg-[var(--color-bg)] p-1 motion-safe:transition-transform motion-safe:hover:-translate-y-1"
                         >
-                          <img src={journey.coverImageUrl} alt={journey.coverImageAlt} className="h-auto w-full" />
+                          <img src={trip.coverImageUrl} alt={trip.coverImageAlt} className="h-auto w-full" />
                         </ImageFrame>
                       ) : (
                         <div className="rounded-[var(--radius-frame)] border border-dashed border-[var(--color-border)] bg-[var(--color-bg)] p-8 text-sm text-[var(--color-muted)]">
@@ -140,13 +135,13 @@ export async function SiteHero() {
                         </div>
                       )}
                       <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-muted)]">
-                        {formatJourneyPlace(journey.location, journey.country) || "Destination to be announced"}
-                        {journey.travelDates ? ` · ${journey.travelDates}` : ""}
+                        {formatTripPlace(trip.location, trip.country) || "Destination to be announced"}
+                        {trip.travelDates ? ` · ${trip.travelDates}` : ""}
                       </p>
-                      <h3 className="text-2xl uppercase leading-[0.92]">{journey.title}</h3>
-                      <p className="text-sm text-[var(--color-muted)]">{journey.excerpt}</p>
+                      <h3 className="text-2xl uppercase leading-[0.92]">{trip.title}</h3>
+                      <p className="text-sm text-[var(--color-muted)]">{trip.excerpt}</p>
                       <Link
-                        href={`/journeys/${journey.slug}`}
+                        href={`/trips/${trip.slug}`}
                         className="inline-flex text-sm font-semibold uppercase tracking-[0.18em] text-[var(--color-accent-blue)] motion-safe:hover:translate-x-0.5"
                       >
                         Read more
@@ -159,14 +154,14 @@ export async function SiteHero() {
           </>
         ) : (
           <section
-            aria-labelledby="featured-journey-heading"
+            aria-labelledby="most-recent-heading"
             className="rounded-[var(--radius-frame)] border border-[var(--color-border)] bg-white p-6 shadow-[var(--shadow-frame)]"
           >
-            <h2 id="featured-journey-heading" className="text-3xl uppercase sm:text-4xl">
-              Featured journey
+            <h2 id="most-recent-heading" className="text-3xl uppercase sm:text-4xl">
+              Most Recent
             </h2>
             <p className="mt-3 max-w-2xl text-[var(--color-muted)]">
-              Rachel’s newest published travel story will appear here once the first journey goes live.
+              Rachel’s newest published travel story will appear here once the first trip goes live.
             </p>
           </section>
         )}

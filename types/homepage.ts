@@ -5,7 +5,7 @@ export interface TemporaryTravelImage {
   height: number;
 }
 
-export interface JourneyPreview {
+export interface TripPreview {
   slug: string;
   title: string;
   location: string;
@@ -17,6 +17,6 @@ export interface JourneyPreview {
 export interface HomePageFixture {
   heroPills: [string, string];
   heroPhotos: TemporaryTravelImage[];
-  featuredJourney: JourneyPreview;
-  recentJourneys: [JourneyPreview, JourneyPreview, JourneyPreview];
+  mostRecentTrip: TripPreview;
+  recentTrips: [TripPreview, TripPreview, TripPreview];
 }

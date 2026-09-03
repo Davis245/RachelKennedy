@@ -7,7 +7,7 @@ export function ScrollIndicator() {
   const [hasScrolled, setHasScrolled] = useState(false);
 
   useEffect(() => {
-    const updateScrollState = () => setHasScrolled(window.scrollY > 24);
+    const updateScrollState = () => setHasScrolled(window.scrollY > 0);
 
     updateScrollState();
     window.addEventListener("scroll", updateScrollState, { passive: true });
@@ -17,8 +17,8 @@ export function ScrollIndicator() {
 
   return (
     <Link
-      href="#featured-journey-heading"
-      aria-label="Scroll to featured journey"
+      href="#most-recent-heading"
+      aria-label="Scroll to the most recent trip"
       aria-hidden={hasScrolled}
       tabIndex={hasScrolled ? -1 : undefined}
       className={`absolute bottom-1 left-1/2 inline-flex -translate-x-1/2 flex-col items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)] transition-[opacity,transform] duration-200 motion-reduce:transition-none ${
