@@ -9,9 +9,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     {
       url: getCanonicalUrl("/"),
     },
-    {
-      url: getCanonicalUrl("/about"),
-    },
   ];
 
   const tripPages: MetadataRoute.Sitemap = trips.map((trip) => ({
