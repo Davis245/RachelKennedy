@@ -133,27 +133,33 @@ const demoPostDetails: Record<
   },
 };
 
-const demoTripStories: TripStory[] = [homePageFixture.mostRecentTrip, ...homePageFixture.recentTrips]
-  .map((trip) => {
-    const details = demoPostDetails[trip.slug];
-    const placeParts = trip.location.split(", ");
-    const country = placeParts.pop() ?? null;
+const demoTripStories: TripStory[] = shouldUseDemoPosts()
+  ? [homePageFixture.mostRecentTrip, ...homePageFixture.recentTrips]
+      .map((trip) => {
+        const details = demoPostDetails[trip.slug];
+        if (!details) {
+          throw new Error(`Missing demo post details for slug "${trip.slug}".`);
+        }
 
-    return {
-      slug: trip.slug,
-      title: trip.title,
-      excerpt: trip.excerpt,
-      publishedAt: details.publishedAt,
-      location: placeParts.join(", ") || null,
-      country,
-      travelDates: trip.travelDates,
-      coverImageUrl: trip.coverImage.src,
-      coverImageAlt: trip.coverImage.alt,
-      contentHtml: details.contentHtml,
-      galleryImages: details.galleryImages,
-    };
-  })
-  .sort((left, right) => Date.parse(right.publishedAt ?? "") - Date.parse(left.publishedAt ?? ""));
+        const placeParts = trip.location.split(", ");
+        const country = placeParts.length > 1 ? (placeParts.pop() ?? null) : null;
+
+        return {
+          slug: trip.slug,
+          title: trip.title,
+          excerpt: trip.excerpt,
+          publishedAt: details.publishedAt,
+          location: placeParts.join(", ") || null,
+          country,
+          travelDates: trip.travelDates,
+          coverImageUrl: trip.coverImage.src,
+          coverImageAlt: trip.coverImage.alt,
+          contentHtml: details.contentHtml,
+          galleryImages: details.galleryImages,
+        };
+      })
+      .sort((left, right) => Date.parse(right.publishedAt ?? "") - Date.parse(left.publishedAt ?? ""))
+  : [];
 
 const demoTripPreviews: TripPreview[] = demoTripStories.map((trip) => ({
   slug: trip.slug,
